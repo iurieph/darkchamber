@@ -21,10 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "PhotoEditor.h"
-#include "ImageViewer.h"
-#include "PhotoEditorToolBar.h"
-
 #include <QKeyEvent>
 #include <QVBoxLayout>
 
@@ -57,3 +53,4 @@ void PhotoEditor::keyPressEvent(QKeyEvent *event)
         }
         QWidget::keyPressEvent(event);
 }
+

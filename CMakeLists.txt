@@ -47,8 +47,8 @@ add_executable(darkchamber
     PhotoBrowser.cpp
     ImageViewer.h
     ImageViewer.cpp
-#    PhotoEditorToolbar.h
-#    PhotoEditorToolBar.cpp
+    PhotoEditorToolbar.h
+    PhotoEditorToolBar.cpp
     PhotoEditor.h
     PhotoEditor.cpp
     MainWindow.cpp

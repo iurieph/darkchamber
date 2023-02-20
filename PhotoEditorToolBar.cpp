@@ -1,5 +1,5 @@
 /**
- * File name: PhotoEditorToolBar.h
+ * File name: PhotoEditorToolBar.cpp
  * Project: DarkChamber (A photo management software)
  *
  * Copyright (C) 2023 Iurie Nistor
