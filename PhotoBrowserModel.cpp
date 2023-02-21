@@ -70,6 +70,11 @@ void PhotoBrowserModel::setColumns(int columns)
         updatePositions();
 }
 
+void PhotoBrowserModel::selectItemsAt(const QPointF &p)
+{
+        modelScene->selectItemsAt(p);
+}
+
 void PhotoBrowserModel::addItems(const std::vector<PhotoItem*> &items)
 {
         auto rejectedFilter = [](const PhotoItem *item) -> bool { return !item->isRejected(); };

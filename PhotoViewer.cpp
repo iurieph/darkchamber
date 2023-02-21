@@ -22,7 +22,6 @@
  */
 
 #include "PhotoViewer.h"
-#include "ImageCropper.h"
 #include "PhotoItem.h"
 
 #include <QScrollBar>
@@ -34,9 +33,7 @@
 
 PhotoViewer::PhotoViewer(QWidget *parent)
         : QGraphicsView(parent)
-        , imageCropper{new ImageCropper(this)}
         , zoomFactor{1.05}
-        , zoomSteps{0}
 {
         setMinimumSize(150, 150);
         setScene(new QGraphicsScene(rect()));
@@ -48,15 +45,14 @@ PhotoViewer::PhotoViewer(QWidget *parent)
 void PhotoViewer::setImage(PhotoItem *image)
 {
         scene()->clear();
-        QPixmap pixmap;
-        auto pixmap = QPixmap().convertFromImage(image->image());
-        auto item = scene()->addPixmap(pixmap);
+        QPixmap pm;
+        pm.convertFromImage(image->image());
+        auto item = scene()->addPixmap(pm);
         item->setPos(0, 0);
-        scene()->setSceneRect(QRect({0, 0}, img.size()));
+        scene()->setSceneRect(QRect({0, 0}, pm.size()));
         resetTransform();
         fitInView(item, Qt::KeepAspectRatio);
         setDragMode(QGraphicsView::NoDrag);
-        zoomSteps = 0;
 }
 
 void PhotoViewer::resizeEvent(QResizeEvent *event)
@@ -67,21 +63,6 @@ void PhotoViewer::resizeEvent(QResizeEvent *event)
         fitInView(scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
         setTransform(tempTransform);
         updateHandDragMode();
-}
-
-void PhotoViewer::keyPressEvent(QKeyEvent *event)
-{
-        switch (event->key()) {
-        case Qt::Key_Right:
-                emit nextImage();
-                break;
-        case Qt::Key_Left:
-                emit nextImage(false);
-                break;
-        default:
-                break;
-        }
-        QWidget::keyPressEvent(event);
 }
 
 void PhotoViewer::wheelEvent(QWheelEvent *event)
@@ -106,4 +87,3 @@ void PhotoViewer::updateHandDragMode()
         else
                 setDragMode(QGraphicsView::ScrollHandDrag);
 }
-

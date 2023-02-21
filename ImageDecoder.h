@@ -26,6 +26,8 @@
 
 #include "DarkChamber.h"
 
+#include <QImage>
+
 class ImageDecoder
 {
 public:
@@ -35,7 +37,7 @@ public:
         virtual QImage thumbnail() const = 0;
         virtual QImage image() const = 0;
 
- priavate:
+ private:
         QString imagePath;
 };
 

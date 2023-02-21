@@ -1,8 +1,8 @@
 /**
- * File name: PhotoViewer.cpp
+ * File name: PhotoEditor.cpp
  * Project: DarkChamber (A photo management software)
  *
- * Copyright (C) 2022 Iurie Nistor
+ * Copyright (C) 2023 Iurie Nistor
  *
  * This file is part of DarkChamber.
  *
@@ -21,57 +21,32 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#include "PhotoEditor.h"
 #include "PhotoViewer.h"
-#include "PhotoItem.h"
 
-#include <QScrollBar>
-#include <QPainter>
-#include <QDebug>
 #include <QKeyEvent>
-#include <QWheelEvent>
-#include <QGraphicsPixmapItem>
+#include <QVBoxLayout>
 
-PhotoViewer::PhotoViewer(QWidget *parent)
-        : QGraphicsView(parent)
-        , zoomFactor{1.05}
-        , zoomSteps{0}
+PhotoEditor::PhotoEditor(QWidget *parent)
+        : QWidget(parent)
+        , imageViewer{new PhotoViewer(this)}
+//        , toolBar{new PhotoEditorToolbar(this)}
 {
-        setMinimumSize(150, 150);
-        setScene(new QGraphicsScene(rect()));
-        setRenderHint(QPainter::Antialiasing);
-        setAlignment(Qt::AlignCenter);
-        setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+        setLayout(new QVBoxLayout(this));
+        layout()->addWidget(imageViewer);
+//        layout()->addWidget(toolBar);
 }
 
-void PhotoViewer::setImage(PhotoItem *image)
+void PhotoEditor::setImage(PhotoItem *image)
 {
-        scene()->clear();
-        QPixmap pm;
-        pm.convertFromImage(image->image());
-        auto item = scene()->addPixmap(pm);
-        item->setPos(0, 0);
-        scene()->setSceneRect(QRect({0, 0}, pm.size()));
-        resetTransform();
-        fitInView(item, Qt::KeepAspectRatio);
-        setDragMode(QGraphicsView::NoDrag);
-        zoomSteps = 0;
+        imageViewer->setImage(image);
 }
 
-void PhotoViewer::resizeEvent(QResizeEvent *event)
-{
-        if (scene()->items().isEmpty())
-                return;
-        auto tempTransform = transform();
-        fitInView(scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
-        setTransform(tempTransform);
-        updateHandDragMode();
-}
-
-void PhotoViewer::keyPressEvent(QKeyEvent *event)
+void PhotoEditor::keyPressEvent(QKeyEvent *event)
 {
         switch (event->key()) {
         case Qt::Key_Right:
-                emit PhotoViewer->nextImage();
+                emit nextImage();
                 break;
         case Qt::Key_Left:
                 emit nextImage(false);
@@ -80,28 +55,5 @@ void PhotoViewer::keyPressEvent(QKeyEvent *event)
                 break;
         }
         QWidget::keyPressEvent(event);
-}
-
-void PhotoViewer::wheelEvent(QWheelEvent *event)
-{
-        if (event->angleDelta().y() > 0) {
-                scale(zoomFactor, zoomFactor);
-                updateHandDragMode();
-        } else if (event->angleDelta().y() < 0) {
-                scale(1.0 / zoomFactor, 1.0 / zoomFactor);
-                updateHandDragMode();
-        } else {
-                QGraphicsView::wheelEvent(event);
-        }
-}
-
-void PhotoViewer::updateHandDragMode()
-{
-        auto mappedRect = transform().mapRect(sceneRect());
-        if (viewport()->rect().width() >= mappedRect.width()
-            && viewport()->rect().height() >= mappedRect.height()) 
-                setDragMode(QGraphicsView::NoDrag);
-        else
-                setDragMode(QGraphicsView::ScrollHandDrag);
 }
 

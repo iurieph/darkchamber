@@ -21,36 +21,4 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <QKeyEvent>
-#include <QVBoxLayout>
-
-PhotoEditor::PhotoEditor(QWidget *parent)
-        : QWidget(parent)
-        , imageViewer{new ImageViewer(this)}
-        , toolBar{new PhotoEditorToolbar(this)}
-{
-        setLayout(new QVBoxLayout(this));
-        layout()->addWidget(imageViewer);
-        layout()->addWidget(toolBar);
-}
-
-void PhotoEditor::setImage(PhotoItem *image)
-{
-        imageViewer->setImage(image);
-}
-
-void PhotoEditor::keyPressEvent(QKeyEvent *event)
-{
-        switch (event->key()) {
-        case Qt::Key_Right:
-                emit nextImage();
-                break;
-        case Qt::Key_Left:
-                emit nextImage(false);
-                break;
-        default:
-                break;
-        }
-        QWidget::keyPressEvent(event);
-}
-
+#include "PhotoEditorToolBar.h"

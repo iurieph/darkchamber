@@ -42,6 +42,9 @@ public:
         PhotoItem* currentSelectedItem() const;
 public slots:
         void addPhoto(PhotoItem *item);
+        void deletePermanelty(const std::vector<PhotoItem*> &items, bool trash);
+        void protect(const std::vector<PhotoItem*> &items, bool p);
+        void clearModel();
 
 signals:
         void itemsAdded(const std::vector<PhotoItem*> &items);
@@ -49,12 +52,6 @@ signals:
         void modelCleared();
         void viewImage(PhotoItem *image);
         
-protected:
-        void clearModel();
-
-protected slots:
-        void loadPhotoList(const QString &path);
-
 private:
         QFileSystemModel *fileSystemModel;
         PhotoFactory *photoFactory;

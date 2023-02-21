@@ -28,7 +28,7 @@
 
 class QStackedWidget;
 class PhotoBrowser;
-class PhotoViewer;
+class PhotoEditor;
 class PhotoItem;
 class PhotoModel;
 class QSplitter;
@@ -53,7 +53,7 @@ protected slots:
 private:
         PhotoModel *photoModel;
         PhotoBrowser *photoBrowser;
-        PhotoViewer *imageViewer;
+        PhotoEditor *imageViewer;
         QStackedWidget *stackedWidget;
         QSplitter *widgetSplitter;
         QThread* pathLoaderThread;

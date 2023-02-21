@@ -28,6 +28,7 @@
 
 class PhotoBrowserModel;
 class PhotoModel;
+class QAction;
 
 class PhotoBrowser : public QGraphicsView
 {
@@ -41,15 +42,23 @@ public slots:
         void previousItem();
 
 protected:
+        void createActions();
         void resizeEvent(QResizeEvent *event) override;
         void keyPressEvent(QKeyEvent *event) override;
         void updateFilters();
         int getColumns() const;
+        void contextMenuEvent(QContextMenuEvent *event);
+        void deletePermanently();
+        void moveToTrash();
+        void protectFile();
 
 private:
         QSize thumbnailSize;
         int thumbnailPadding;
         PhotoBrowserModel *browserModel;
+        QAction* deleteAct;
+        QAction* trashAct;
+        QAction* protectAct;
 };
 
 #endif // PHOTO_BROWSER_H

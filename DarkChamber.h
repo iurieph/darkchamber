@@ -34,5 +34,7 @@
 
 #include <QDebug>
 
+#define DARKCHAMBER_LOG_DEBUG() qDebug() << __PRETTY_FUNCTION__ << "[DEBUG] "
+
 #endif // DARKCHAMBER_H
 

@@ -37,7 +37,6 @@ signals:
         void nextImage(bool direction = true);
 
  protected:
-        void keyPressEvent(QKeyEvent *event) override;
         void resizeEvent(QResizeEvent *event) override;
         void wheelEvent(QWheelEvent *event) override;
         void updateHandDragMode();

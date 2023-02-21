@@ -21,22 +21,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef RAW_IMAGE_H
-#define RAW_IMAGE_H
+#ifndef IMAGE_DATA_H
+#define IMAGE_DATA_H
 
 #include "DarkChamber.h"
+#include "ImageDecoder.h"
 
-
-class RawImageDecoder : public ImageDecoder
+class ImageData
 {
-        RawImageDecoder(const QString &path);
+ public:
+        ImageData(const QString &path);
         const QString& path() const;
-        void setPath(const QString &path);
-        const QImage& thumbnail() const;
+        QImage thumbnail() const;
+        QImage image() const;
         
  private:
-        QString imagePath;
-        QImage imageThumbnail;
+        std::unique_ptr<ImageDecoder> imageDecoder;
 };
 
-#endif // RAW_IMAGE_H
+#endif // IMAGE_DATA_H

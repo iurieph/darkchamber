@@ -1,5 +1,5 @@
 /**
- * File name: PhotoViewer.h
+ * File name: PhotoEditor.h
  * Project: DarkChamber (A photo management software)
  *
  * Copyright (C) 2023 Iurie Nistor
@@ -21,17 +21,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+#ifndef PHOTO_EDITOR_H
+#define PHOTO_EDITOR_H
+
 #include "DarkChamber.h"
 
 #include <QWidget>
 
 class PhotoItem;
+class PhotoViewer;
 
-class PhotoViewer: public QWidget
+class PhotoEditor: public QWidget
 {
  Q_OBJECT
  public:
-        explicit PhotoViewer(QWidget *parent);
+        explicit PhotoEditor(QWidget *parent);
         void setImage(PhotoItem *image);
 
 signals:
@@ -39,14 +43,9 @@ signals:
 
  protected:
         void keyPressEvent(QKeyEvent *event) override;
-        void resizeEvent(QResizeEvent *event) override;
-        void wheelEvent(QWheelEvent *event) override;
-        void updateHandDragMode();
-
+   
 private:
-        PhotoViewer *photoViewer;
-        QImage sourceImage;
-        QImage renderedImage;
-        double zoomFactor;
-        int zoomSteps;
+        PhotoViewer *imageViewer;
 };
+
+#endif // PHOTO_EDITOR_H
