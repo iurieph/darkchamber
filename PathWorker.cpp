@@ -48,20 +48,24 @@ void PathWorker::stop()
 
 void PathWorker::run()
 {
-        QDirIterator it(rootPath, QDir::NoDotAndDotDot | QDir::Files);
+        DARKCHAMBER_LOG_DEBUG() << "run";
+        QDirIterator it(rootPath,
+                        PhotoItem::formats(),
+                        QDir::Files,
+                        QDirIterator::Subdirectories);
         while (isRunning && it.hasNext()) {
                 auto file = it.fileInfo();
-                if (PhotoItem::formats().contains(file.suffix())) {
-                        DarkChamberApplication::guiSemaphore().acquire();
-                        auto thumbWorker = new PhotoWorker(file.filePath());
-                        QObject::connect(thumbWorker,
-                                         &PhotoWorker::photoAvailable,
-                                         this,
-                                         &PathWorker::photoAvailable);
-                        QThreadPool::globalInstance()->start(thumbWorker);
-                }
+                DarkChamberApplication::guiSemaphore().acquire();
+                DARKCHAMBER_LOG_DEBUG() << "file: " << file.filePath();
+                auto thumbWorker = new PhotoWorker(file.filePath());
+                QObject::connect(thumbWorker,
+                                 &PhotoWorker::photoAvailable,
+                                 this,
+                                 &PathWorker::photoAvailable);
+                QThreadPool::globalInstance()->start(thumbWorker);
                 it.next();
         }
+        DARKCHAMBER_LOG_DEBUG() << "exit";
 }
 
 

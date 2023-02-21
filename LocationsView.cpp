@@ -37,7 +37,7 @@ LocationsView::LocationsView(QWidget *parent)
                          this,
                          [&](const QModelIndex &index) {
                                  auto filePath = dynamic_cast<QFileSystemModel*>(treeView->model())->filePath(index);
-                                 qDebug() << "filePath: " << filePath;
+                                 DARKCHAMBER_LOG_DEBUG() << "location path: " << filePath;
                                  emit pathSelected(filePath);
                          });  
         treeView->setAnimated(true);

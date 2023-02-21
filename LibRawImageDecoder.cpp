@@ -49,53 +49,22 @@ QImage LibRawImageDecoder::thumbnail() const
 
 QImage LibRawImageDecoder::image() const
 {
-        /*        auto rawProcessor = std::make_unique<LibRaw>();
+        auto rawProcessor = std::make_unique<LibRaw>();
         if (rawProcessor->open_file(path().toStdString().c_str()) != LIBRAW_SUCCESS)
                 return QImage();
 
         if (rawProcessor->unpack() != LIBRAW_SUCCESS)
                 return QImage();
 
-        auto channels = rawProcessor->imgdata.idata.colors;
-        QImage img(rawProcessor->imgdata.sizes.iwidth, rawProcessor->imgdata.sizes.iheight, QImage::Format_ARGB32);
-        rawProcessor->raw2image();
-        for (auto y = 0; y < img.height(); y++) {
-                auto line = static_cast<QRgb*>(img.scanLine(y));
-                for (auto x = 0; x < img.width(); x++) {
-                        int r = rawProcessor->imgdata.image[y][x][0];
-                        int g = rawProcessor->imgdata.image[y][x][1];
-                        int b = rawProcessor->imgdata.image[y][x][2];
-                        int a = (channels == 4) ? rawProcessor->imgdata.image[y][x][3] : 255;
-                        line[x] = qRgba(r, g, b, a);
-                }
-        }
+        if (rawProcessor->dcraw_process() != LIBRAW_SUCCESS)
+                return QImage();
 
-
-        int width = rawProcessor->imgdata.sizes.iwidth;
-        int height = rawProcessor->imgdata.sizes.iheight;
-        auto img = QImage(width, height, QImage::Format_ARGB32);
-        rawProcessor->raw2image();
-        for (auto y = 0; y < height; y++) {
-                for (atuo x = 0; x < width; x++) {
-                        img.setPixelColor(x, y, QColor(iProcessor.imgdata.image[i][0],
-                                                       iProcessor.imgdata.image[i][1],
-                                                       iProcessor.imgdata.image[i][2],
-                                                       iProcessor.imgdata.image[i][3]));
-                }
-        }
-
-        QImage img(rawProcessor->imgdata.width, rawProcessor->imgdata.height, QImage::Format_ARGB32);
-        for (auto y = 0; y < image.height(); y++) {
-                auto line = static_cast<QRgb*>(img.scanLine(y));
-                for (auto x = 0; x < image.width(); x++) {
-                        int r = rawProcessor->imgdata.image[y][x][0];
-                        int g = rawProcessor->imgdata.image[y][x][1];
-                        int b = rawProcessor->imgdata.image[y][x][2];
-                                        int a = (channels == 4) ? rawProcessor->imgdata.image[y][x][3] : 255;
-                                        line[x] = qRgba(r, g, b, a);
-                }
-                }*/
-        return QImage();
-
-        //        return img;
+        auto image = rawProcessor->dcraw_make_mem_image();
+        if (!image)
+                return QImage();
+                
+        QImage img(image->width, image->height, QImage::Format_RGB888);
+        img.loadFromData(image->data, image->data_size);
+        LibRaw::dcraw_clear_mem(image);
+        return img;
 }

@@ -85,7 +85,8 @@ void PathLoader::setPath(const QString &path)
         isSetPath = false;
         
         emit pathChanged(rootPath);
-        
+
+        DARKCHAMBER_LOG_DEBUG() << "set root path: " << rootPath;
         pathWorker->setPath(rootPath);
         threadPool->start(pathWorker);
 }

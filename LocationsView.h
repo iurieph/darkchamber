@@ -24,6 +24,8 @@
 #ifndef LOCATIONS_VIEW_H
 #define LOCATIONS_VIEW_H
 
+#include "DarkChamber.h"
+
 #include <QDockWidget>
 
 class QFileSystemModel;
