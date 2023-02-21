@@ -100,13 +100,14 @@ void PhotoBrowser::keyPressEvent(QKeyEvent *event)
 
 void PhotoBrowser::contextMenuEvent(QContextMenuEvent *event)
 {
-        auto itemsAt = items();
-        browserModel->selectItemsAt(mapToScene({event->x(), event->y()}));
-        QMenu menu(this);
-        menu.addAction(deleteAct);
-        menu.addAction(trashAct);
-        menu.addAction(protectAct);
-        menu.exec(event->globalPos());
+        auto res = browserModel->selectItemAt(mapToScene({event->x(), event->y()}));
+        if (res) {
+                QMenu menu(this);
+                menu.addAction(deleteAct);
+                menu.addAction(trashAct);
+                menu.addAction(protectAct);
+                menu.exec(event->globalPos());
+        }
 }
 
 void PhotoBrowser::deletePermanently()
@@ -115,8 +116,8 @@ void PhotoBrowser::deletePermanently()
                                         tr("Are you shure you want to permanently delete the file(s)?"),
                                         QMessageBox::Yes,
                                         QMessageBox::No);
-//        if (res == QMessageBox::Yes)
-//                browserModel->deleteSelectedItems(false);
+        if (res == QMessageBox::Yes)
+                browserModel->deleteSelectedItems(false);
 }
 
 void PhotoBrowser::moveToTrash()

@@ -59,8 +59,10 @@ void PhotoModel::deletePermanelty(const std::vector<PhotoItem*> &items, bool tra
                 }
         }
         
-        if (!itemsToRemove.empty())
+        if (!itemsToRemove.empty()) {
                 emit itemsRemoved(itemsToRemove);
+                DARKCHAMBER_LOG_DEBUG();
+        }
 }
 
 void PhotoModel::protect(const std::vector<PhotoItem*> &items, bool p)

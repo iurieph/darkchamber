@@ -62,9 +62,9 @@ QImage LibRawImageDecoder::image() const
         auto image = rawProcessor->dcraw_make_mem_image();
         if (!image)
                 return QImage();
-                
+
         QImage img(image->width, image->height, QImage::Format_RGB888);
-        img.loadFromData(image->data, image->data_size);
+        std::memcpy(img.bits(), image->data, image->data_size);
         LibRaw::dcraw_clear_mem(image);
         return img;
 }

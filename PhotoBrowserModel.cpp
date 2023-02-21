@@ -70,9 +70,17 @@ void PhotoBrowserModel::setColumns(int columns)
         updatePositions();
 }
 
-void PhotoBrowserModel::selectItemsAt(const QPointF &p)
+bool PhotoBrowserModel::selectItemAt(const QPointF &p)
 {
-//        modelScene->selectItemsAt(p);
+        auto items = modelScene->items(p);
+        if (!items.isEmpty()) {
+                auto thumb = dynamic_cast<Thumbnail*>(items.first());
+                if (thumb) {
+                        thumb->setSelected(true);
+                        return true;
+                }
+        }
+        return false;
 }
 
 void PhotoBrowserModel::addItems(const std::vector<PhotoItem*> &items)
@@ -89,6 +97,7 @@ void PhotoBrowserModel::addItems(const std::vector<PhotoItem*> &items)
 
 void PhotoBrowserModel::removeItems(const std::vector<PhotoItem*> &items)
 {
+        DARKCHAMBER_LOG_DEBUG();
         for (const auto& item: items) {
                 auto it = findByPhotoItem(item);
                 if (it != modelItems.end()) {
@@ -220,6 +229,21 @@ void PhotoBrowserModel::rejectSelectedItems()
         }
 }
 
+void PhotoBrowserModel::deleteSelectedItems(bool trash)
+{
+        auto sceneSelectedItems = modelScene->selectedItems();
+        if (sceneSelectedItems.empty())
+                return;
+
+        std::vector<PhotoItem*> selectedItems;
+        for (const auto &item: sceneSelectedItems) {
+                auto thumb = dynamic_cast<Thumbnail*>(item);
+                if (thumb)
+                        selectedItems.emplace_back(thumb->getPhotoItem());
+        }
+        photoModel->deletePermanelty(selectedItems, trash);
+        
+}
 
 PhotoBrowserModel::ModelItems::iterator
 PhotoBrowserModel::findBySceneItem(const QGraphicsItem *item)

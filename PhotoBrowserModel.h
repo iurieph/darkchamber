@@ -54,9 +54,9 @@ public:
         void selectUp();
         void selectDown();
         void rejectSelectedItems();
+        bool selectItemAt(const QPointF &p);
         void deleteSelectedItems(bool trash = true);
         void protectSelectedItems(bool protect = true);
-        void selectItemsAt(const QPointF &p);
 
 public slots:
         void addItems(const std::vector<PhotoItem*> &items);
