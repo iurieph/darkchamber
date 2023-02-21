@@ -115,18 +115,18 @@ void PhotoBrowser::deletePermanently()
                                         tr("Are you shure you want to permanently delete the file(s)?"),
                                         QMessageBox::Yes,
                                         QMessageBox::No);
-        if (res == QMessageBox::Yes)
-                browserModel->deleteSelectedItems(false);
+//        if (res == QMessageBox::Yes)
+//                browserModel->deleteSelectedItems(false);
 }
 
 void PhotoBrowser::moveToTrash()
 {
-        browserModel->deleteSelectedItems();
+//        browserModel->deleteSelectedItems();
 }
 
 void PhotoBrowser::protectFile()
 {
-        browserModel->protectSelectedItems();
+//        browserModel->protectSelectedItems();
 }
 
 int PhotoBrowser::getColumns() const

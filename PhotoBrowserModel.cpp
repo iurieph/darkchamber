@@ -72,7 +72,7 @@ void PhotoBrowserModel::setColumns(int columns)
 
 void PhotoBrowserModel::selectItemsAt(const QPointF &p)
 {
-        modelScene->selectItemsAt(p);
+//        modelScene->selectItemsAt(p);
 }
 
 void PhotoBrowserModel::addItems(const std::vector<PhotoItem*> &items)

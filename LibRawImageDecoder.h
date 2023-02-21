@@ -32,7 +32,6 @@ class LibRawImageDecoder : public ImageDecoder
 public:
         
         LibRawImageDecoder(const QString &path);
-        const QString& path() const;
         QImage thumbnail() const override;
         QImage image() const override;
 };
