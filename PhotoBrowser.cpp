@@ -70,6 +70,7 @@ void PhotoBrowser::createActions()
 
 void PhotoBrowser::resizeEvent(QResizeEvent *event)
 {
+        DARKCHAMBER_LOG_DEBUG();
         browserModel->setColumns(getColumns());
 }
 

@@ -54,7 +54,9 @@ void PathWorker::run()
                         QDir::Files,
                         QDirIterator::Subdirectories);
         while (isRunning && it.hasNext()) {
-                auto file = it.fileInfo();
+                auto file = QFileInfo(it.next());
+                if (!file.exists())
+                        continue;
                 DarkChamberApplication::guiSemaphore().acquire();
                 DARKCHAMBER_LOG_DEBUG() << "file: " << file.filePath();
                 auto thumbWorker = new PhotoWorker(file.filePath());
@@ -63,7 +65,6 @@ void PathWorker::run()
                                  this,
                                  &PathWorker::photoAvailable);
                 QThreadPool::globalInstance()->start(thumbWorker);
-                it.next();
         }
         DARKCHAMBER_LOG_DEBUG() << "exit";
 }

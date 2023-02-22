@@ -66,9 +66,16 @@ void PhotoBrowserModel::setThumbnailPadding(int padding)
 
 void PhotoBrowserModel::setColumns(int columns)
 {
-        itemColumns = columns;
-        updatePositions();
+        if (itemColumns != columns) {
+                itemColumns = columns;
+                updatePositions();
+                return;
+        }
+
+        // The QGraphicsScene caches the scene rect.
+        emit modelScene->sceneRectChanged(modelScene->sceneRect());
 }
+        
 
 bool PhotoBrowserModel::selectItemAt(const QPointF &p)
 {
