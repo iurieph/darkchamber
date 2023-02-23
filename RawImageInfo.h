@@ -1,5 +1,5 @@
 /**
- * File name: RawImage.h
+ * File name: RawImageInfo.h
  * Project: DarkChamber (A photo management software)
  *
  * Copyright (C) 2023 Iurie Nistor
@@ -21,26 +21,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef LIB_RAW_IMAGE_DECODER_H
-#define LIB_RAW_IMAGE_DECODER_H
+#ifndef RAW_IMAGE_INFO_H
+#define RAW_IMAGE_INFO_H
 
 #include "DarkChamber.h"
-#include "ImageDecoder.h"
 
-#include "libraw/libraw.h"
-
-class LibRawImageDecoder : public ImageDecoder
+class RawImageInfo
 {
 public:
-        
-        LibRawImageDecoder(const QString &path);
-        QImage thumbnail() const override;
-        QImage image() const override;
-
-protected:
-        std::unique_ptr<LibRaw> getProcessor() const;
-        std::unique_ptr<RawImageInfo> loadImageInfo() override;
-        std::unique_ptr<RawImageInfo> loadRawInfo(const std::unique_ptr<LibRaw> &processor);
+        RawImageInfo();
+        void setISO(double val);
+        void setAperture(double val);
+        void setShutter(double val);
+        double getISO() const;
+        double getAperture() const;
+        double getShutter() const;
+private:
+        double isoVal;
+        double apertureVal;
+        double shutterVal;
 };
 
-#endif // LIB_RAW_IMAGE_DECODER_H
+#endif // RAW_IMAGE_INFO

@@ -103,3 +103,8 @@ bool PhotoItem::deleteFile(bool trash)
         else
                 return QFile::remove(path());
 }
+
+ImageData PhotoItem::imageData() const
+{
+        return ImageData(path());
+}

@@ -41,3 +41,8 @@ QImage DefaultImageDecoder::image() const
 {
         return QImage(path());
 }
+
+std::unique_ptr<RawImageInfo> DefaultImageDecoder::loadImageInfo()
+{
+        return std::make_unique<RawImageInfo>();
+}

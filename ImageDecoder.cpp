@@ -25,6 +25,7 @@
 
 ImageDecoder::ImageDecoder(const QString &path)
         : imagePath{path}
+        , rawImageInfo{nullptr}
 {
 }
 
@@ -36,4 +37,23 @@ void ImageDecoder::setPath(const QString &path)
 const QString& ImageDecoder::path() const
 {
         return imagePath;
+}
+
+const RawImageInfo* ImageDecoder::imageInfo()
+{
+        if (!getImageInfo()) {
+                auto img = loadImageInfo();
+                setImageInfo(std::move(img));
+        }
+        return rawImageInfo.get();
+}
+
+void ImageDecoder::setImageInfo(std::unique_ptr<RawImageInfo> info)
+{
+        rawImageInfo = std::move(info);
+}
+
+RawImageInfo* ImageDecoder::getImageInfo() const
+{
+        return rawImageInfo.get();
 }

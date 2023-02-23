@@ -23,18 +23,28 @@
 
 #include "LibRawImageDecoder.h"
 
-#include "libraw/libraw.h"
-
 LibRawImageDecoder::LibRawImageDecoder(const QString &path)
         : ImageDecoder(path)
 {
 }
 
+std::unique_ptr<LibRaw> LibRawImageDecoder::getProcessor() const
+{
+        auto processor = std::make_unique<LibRaw>();
+        if (processor->open_file(path().toStdString().c_str()) != LIBRAW_SUCCESS)
+                return nullptr;
+        return processor;
+}
+
+
 QImage LibRawImageDecoder::thumbnail() const
 {        
-        auto rawProcessor = std::make_unique<LibRaw>();
-        if (rawProcessor->open_file(path().toStdString().c_str()) != LIBRAW_SUCCESS)
+        auto rawProcessor = getProcessor();
+        if (!rawProcessor)
                 return QImage();
+
+//        if (!getImageInfo())
+        //               setImageInfo(loadRawInfo(rawProcessor));
 
         if (rawProcessor->unpack_thumb() != LIBRAW_SUCCESS)
                 return QImage();
@@ -49,9 +59,12 @@ QImage LibRawImageDecoder::thumbnail() const
 
 QImage LibRawImageDecoder::image() const
 {
-        auto rawProcessor = std::make_unique<LibRaw>();
-        if (rawProcessor->open_file(path().toStdString().c_str()) != LIBRAW_SUCCESS)
+        auto rawProcessor = getProcessor();
+        if (!rawProcessor)
                 return QImage();
+
+//        if (!getImageInfo())
+//                setImageInfo(loadRawInfo(rawProcessor));
 
         if (rawProcessor->unpack() != LIBRAW_SUCCESS)
                 return QImage();
@@ -63,6 +76,7 @@ QImage LibRawImageDecoder::image() const
         if (!image)
                 return QImage();
 
+        // TODO: use 16bit images.
         QImage img(image->data,
                    image->width,
                    image->height,
@@ -73,3 +87,22 @@ QImage LibRawImageDecoder::image() const
                    image);
         return img;
 }
+
+std::unique_ptr<RawImageInfo> LibRawImageDecoder::loadImageInfo()
+{
+        auto processor = getProcessor();
+        if (!processor)
+                return std::make_unique<RawImageInfo>();
+        return loadRawInfo(processor);
+}
+
+std::unique_ptr<RawImageInfo> LibRawImageDecoder::loadRawInfo(const std::unique_ptr<LibRaw> &processor)
+{
+        auto info = std::make_unique<RawImageInfo>();
+        info->setISO(processor->imgdata.other.iso_speed);
+        info->setShutter(processor->imgdata.other.shutter);
+        info->setAperture(processor->imgdata.other.aperture);
+        return info;
+}
+
+

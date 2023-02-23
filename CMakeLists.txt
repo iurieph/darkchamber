@@ -16,6 +16,8 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
 add_executable(darkchamber
     DarkChamber.h
+    RawImageInfo.h
+    RawImageInfo.cpp
     ImageDecoder.h
     ImageDecoder.cpp
     DefaultImageDecoder.h
@@ -47,8 +49,8 @@ add_executable(darkchamber
     PhotoBrowser.cpp
     PhotoViewer.h
     PhotoViewer.cpp
-#    PhotoEditorToolBar.h
-#    PhotoEditorToolBar.cpp
+    PhotoEditorToolBar.h
+    PhotoEditorToolBar.cpp
     PhotoEditor.h
     PhotoEditor.cpp
     MainWindow.cpp

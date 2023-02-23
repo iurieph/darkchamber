@@ -30,6 +30,7 @@
 
 class PhotoItem;
 class PhotoViewer;
+class PhotoEditorToolBar;
 
 class PhotoEditor: public QWidget
 {
@@ -46,6 +47,7 @@ signals:
    
 private:
         PhotoViewer *imageViewer;
+        PhotoEditorToolBar *editorToolBar;
 };
 
 #endif // PHOTO_EDITOR_H

@@ -29,20 +29,18 @@
 
 PhotoEditorToolBar::PhotoEditorToolBar(QWidget *parent)
         : QToolBar(parent)
+        , exposureInfo{new QLabel(this)}
 {
-        // Basic exprosure info label
-        addWidget(new QLabel("ISO 32000   f/8   1/250   1000mm"));
+        addWidget(exposureInfo);
+//        addSeparator();
 
-        addSeparator();
+//auto photoInfoAct = new QAction(QIcon::fromTheme("photoeditortoolbar-imageinfo"),
+//                                        tr("Image info"));
+// photoInfoAct->setCheckable(true);
+//      addAction(photoInfoAct);
+}
 
-        // Image info action
-        auto list = QIcon::themeSearchPaths();
-        DARKCHAMBER_LOG_DEBUG() << "Theme name: " << QIcon::themeName();
-        for (const auto &p: list)
-                DARKCHAMBER_LOG_DEBUG() << p;
-        
-        auto photoInfoAct = new QAction(QIcon::fromTheme("photoeditortoolbar-imageinfo"),
-                                        tr("Image info"));
-        photoInfoAct->setCheckable(true);
-        addAction(photoInfoAct);
+void PhotoEditorToolBar::setExposureInfo(const QString &info)
+{
+        exposureInfo->setText(info);
 }

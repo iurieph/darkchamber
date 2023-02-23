@@ -24,7 +24,7 @@
 #ifndef IMAGE_DECODER_H
 #define IMAGE_DECODER_H
 
-#include "DarkChamber.h"
+#include "RawImageInfo.h"
 
 #include <QImage>
 
@@ -36,9 +36,16 @@ public:
         const QString& path() const;
         virtual QImage thumbnail() const = 0;
         virtual QImage image() const = 0;
+        const RawImageInfo* imageInfo();
+
+protected:
+        void setImageInfo(std::unique_ptr<RawImageInfo> info);
+        RawImageInfo* getImageInfo() const;
+        virtual std::unique_ptr<RawImageInfo> loadImageInfo() = 0;
 
  private:
         QString imagePath;
+        std::unique_ptr<RawImageInfo> rawImageInfo;
 };
 
 #endif // IMAGE_DECODER_H

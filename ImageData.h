@@ -34,6 +34,9 @@ class ImageData
         const QString& path() const;
         QImage thumbnail() const;
         QImage image() const;
+        double getISO() const;
+        double getAperture() const;
+        double getShutter() const;
         
  private:
         std::unique_ptr<ImageDecoder> imageDecoder;

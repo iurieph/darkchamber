@@ -57,3 +57,24 @@ QImage ImageData::image() const
 {
         return imageDecoder->image();
 }
+
+double ImageData::getISO() const
+{
+        if (imageDecoder->imageInfo())
+                return imageDecoder->imageInfo()->getISO();
+        return 0;
+}
+
+double ImageData::getAperture() const
+{
+        if (imageDecoder->imageInfo())
+                return imageDecoder->imageInfo()->getAperture();
+        return 0;
+}
+
+double ImageData::getShutter() const
+{
+        if (imageDecoder->imageInfo())
+                return imageDecoder->imageInfo()->getShutter();
+        return 0;
+}

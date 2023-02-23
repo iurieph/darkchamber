@@ -32,6 +32,9 @@ class DefaultImageDecoder : public ImageDecoder
         DefaultImageDecoder(const QString &path);
         QImage thumbnail() const override;
         QImage image() const override;
+
+protected:
+        std::unique_ptr<RawImageInfo> loadImageInfo() override;
 };
 
 #endif // DEFAULT_IAMGE_DECODER_H

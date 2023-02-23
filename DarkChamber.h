@@ -31,6 +31,7 @@
 #include <vector>
 #include <utility>
 #include <ranges>
+#include <limits>
 
 #include <QDebug>
 

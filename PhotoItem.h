@@ -26,6 +26,7 @@
 
 #include "DarkChamber.h"
 #include "PhotoStateFile.h"
+#include "ImageData.h"
 
 #include <QObject>
 #include <QImage>
@@ -48,6 +49,7 @@ public:
         bool deleteFile(bool trash = true);
         bool protect(bool p = true);
         bool isProtected() const;
+        ImageData imageData() const;
 
 signals:
         void photoRejected(bool b);

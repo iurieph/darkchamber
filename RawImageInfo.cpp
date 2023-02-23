@@ -1,5 +1,5 @@
 /**
- * File name: RawImage.h
+ * File name: RawImageInfo.cpp
  * Project: DarkChamber (A photo management software)
  *
  * Copyright (C) 2023 Iurie Nistor
@@ -21,26 +21,41 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef LIB_RAW_IMAGE_DECODER_H
-#define LIB_RAW_IMAGE_DECODER_H
+#include "RawImageInfo.h"
 
-#include "DarkChamber.h"
-#include "ImageDecoder.h"
-
-#include "libraw/libraw.h"
-
-class LibRawImageDecoder : public ImageDecoder
+RawImageInfo::RawImageInfo()
+        : isoVal{-1.0}
+        , apertureVal{-1.0}
+        , shutterVal{-1.0}        
 {
-public:
-        
-        LibRawImageDecoder(const QString &path);
-        QImage thumbnail() const override;
-        QImage image() const override;
+}
 
-protected:
-        std::unique_ptr<LibRaw> getProcessor() const;
-        std::unique_ptr<RawImageInfo> loadImageInfo() override;
-        std::unique_ptr<RawImageInfo> loadRawInfo(const std::unique_ptr<LibRaw> &processor);
-};
+void RawImageInfo::setISO(double val)
+{
+        isoVal = val;
+}
 
-#endif // LIB_RAW_IMAGE_DECODER_H
+void RawImageInfo::setAperture(double val)
+{
+        apertureVal = val;
+}
+
+void RawImageInfo::setShutter(double val)
+{
+        shutterVal = val;
+}
+
+double RawImageInfo::getISO() const
+{
+        return isoVal;
+}
+
+double RawImageInfo::getAperture() const
+{
+        return apertureVal;
+}
+
+double RawImageInfo::getShutter() const
+{
+        return shutterVal;
+}

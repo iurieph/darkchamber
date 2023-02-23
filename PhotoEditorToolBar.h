@@ -1,5 +1,5 @@
 /**
- * File name: PhotoEditorToolbar.cpp
+ * File name: PhotoEditorToolBar.h
  * Project: DarkChamber (A photo management software)
  *
  * Copyright (C) 2023 Iurie Nistor
@@ -21,4 +21,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "PhotoEditorToolBar.h"
+#ifndef PHOTO_EDITOR_TOOL_BAR_H
+#define PHOTO_EDITOR_TOOL_BAR_H
+
+#include "DarkChamber.h"
+
+#include <QToolBar>
+
+class QLabel;
+
+class PhotoEditorToolBar : public QToolBar
+{
+public:
+        explicit PhotoEditorToolBar(QWidget *parent = nullptr);
+        
+public slots:
+        void setExposureInfo(const QString &info);
+
+private:
+        QLabel *exposureInfo;
+};
+
+#endif // PHOTO_EDITOR_TOOL_BAR_H
