@@ -37,6 +37,7 @@ class ImageData
         double getISO() const;
         double getAperture() const;
         double getShutter() const;
+        QString getExposureInfo() const;
         
  private:
         std::unique_ptr<ImageDecoder> imageDecoder;

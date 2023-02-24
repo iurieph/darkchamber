@@ -42,18 +42,7 @@ PhotoEditor::PhotoEditor(QWidget *parent)
 void PhotoEditor::setImage(PhotoItem *image)
 {
         imageViewer->setImage(image);
-        auto imgData = image->imageData();
-        double shutter = -1; 
-        if (imgData.getShutter() > 0
-            && (imgData.getShutter() - 0.0) > std::numeric_limits<decltype(shutter)>::epsilon()) {
-                shutter = imgData.getShutter();
-        }
-
-        auto info = QString::asprintf("ISO %.0f  f/%.1f  1/%.0f",
-                                      imgData.getISO(),
-                                      imgData.getAperture(),
-                                      1 / shutter);
-        editorToolBar->setExposureInfo(info);
+        editorToolBar->setExposureInfo(image->imageData().getExposureInfo());
 }
 
 void PhotoEditor::keyPressEvent(QKeyEvent *event)

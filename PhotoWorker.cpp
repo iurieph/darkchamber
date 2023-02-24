@@ -25,14 +25,17 @@
 #include "PhotoItem.h"
 #include "Application.h"
 
-PhotoWorker::PhotoWorker(const QString &path)
+PhotoWorker::PhotoWorker(const QString &path, QSemaphore &sem)
         : photoPath{path}
+        , workerSem{sem}
 {
 }
         
 void PhotoWorker::run()
 {
+        DarkChamberApplication::guiSemaphore().acquire();
         auto item = new PhotoItem(photoPath);
         item->moveToThread(QApplication::instance()->thread());
         emit photoAvailable(item);
+        workerSem.release();
 }

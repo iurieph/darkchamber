@@ -26,6 +26,7 @@
 
 #include <QObject>
 #include <QRunnable>
+#include <QSemaphore>
 
 class PhotoItem;
 
@@ -33,13 +34,14 @@ class PhotoWorker : public QObject, public QRunnable
 {
         Q_OBJECT
 public:
-        PhotoWorker(const QString &path);
+        PhotoWorker(const QString &path, QSemaphore &sem);
         void run() override;
 
 signals:
         void photoAvailable(PhotoItem *item);
 private:
         QString photoPath;
+        QSemaphore &workerSem;
 };
 
 #endif // PHOTO_WORKER_H

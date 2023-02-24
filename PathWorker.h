@@ -28,6 +28,7 @@
 
 #include <QObject>
 #include <QRunnable>
+#include <QSemaphore>
 
 #include <atomic>
 
@@ -47,6 +48,7 @@ signals:
 private:
         QString rootPath;
         std::atomic<bool> isRunning;
+        QSemaphore photoWorkerSem;
 };
 
 #endif // PATH_WORKER_H

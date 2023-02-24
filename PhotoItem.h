@@ -41,7 +41,8 @@ public:
         static QStringList formats();
         const QImage &thumbnail() const;
         QImage image() const;
-        const QString &path() const;
+        const QString& path() const;
+        const QString& photoName() const;
         void setRejected(bool b = true);
         bool isRejected() const;
         void setSelected(bool b = true);
@@ -58,6 +59,7 @@ signals:
 
 private:
         QString photoPath;
+        QString fileName;
         QImage photoThumbnail;
         PhotoStateFile photoStateFile;
         bool photoIsSelected;

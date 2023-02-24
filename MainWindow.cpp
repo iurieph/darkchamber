@@ -36,6 +36,7 @@
 #include <QStackedWidget>
 #include <QSplitter>
 #include <QThread>
+#include <QTimer>
 
 MainWindow::MainWindow()
         : QMainWindow()
@@ -81,6 +82,13 @@ MainWindow::MainWindow()
         widgetSplitter->addWidget(photoBrowser);
         setCentralWidget(widgetSplitter);
         resize(1300, 800);
+
+        QTimer *timer = new QTimer(this);
+        static int n;
+        QObject::connect(timer, &QTimer::timeout, [](){
+                DARKCHAMBER_LOG_DEBUG() << "time" <<  n++;
+        });
+        timer->start(50);
 }
 
 MainWindow::~MainWindow()
@@ -104,6 +112,7 @@ void MainWindow::showImage(PhotoItem *image)
                                  &PhotoEditor::nextImage,
                                  this,
                                  &MainWindow::showNextImage);
+                setWindowTitle("DarkChamber - "+ image->photoName());
         }
         imageViewer->setImage(image);
 }

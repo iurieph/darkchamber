@@ -78,3 +78,29 @@ double ImageData::getShutter() const
                 return imageDecoder->imageInfo()->getShutter();
         return 0;
 }
+
+QString ImageData::getExposureInfo() const
+{
+        auto rawInfo = imageDecoder->imageInfo();
+        QString isoStr;
+        if (rawInfo->getISO() < 0.0)
+                isoStr = "-";
+        else
+                isoStr = QString::number(rawInfo->getISO(), 'f', 0);
+
+        QString apertureStr;
+        if (rawInfo->getAperture() < 0.0)
+                apertureStr = "-";
+        else
+                apertureStr = QString::number(rawInfo->getAperture(), 'f', 1);
+
+        QString shutterStr;
+        if (rawInfo->getShutter() < 0.0
+            || (rawInfo->getShutter() - 0.0) < std::numeric_limits<double>::epsilon()) {
+                shutterStr = "-";
+        } else {
+                shutterStr = QString::number( 1.0 / rawInfo->getShutter(), 'f', 0);
+        }
+
+        return QString("ISO %1  f/%2  1/%3").arg(isoStr).arg(apertureStr).arg(shutterStr);
+}

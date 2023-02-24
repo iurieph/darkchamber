@@ -31,6 +31,7 @@
 PhotoItem::PhotoItem(const QString &path, QObject *parent)
         : QObject(parent)
         , photoPath{path}
+        , fileName{QFileInfo(path).fileName()}
         , photoStateFile{PhotoStateFile(photoPath)}
         , photoThumbnail{ImageData(path).thumbnail()}
         , photoIsSelected{false}
@@ -55,6 +56,11 @@ QImage PhotoItem::image() const
 const QString& PhotoItem::path() const
 {
         return photoPath;
+}
+
+const QString& PhotoItem::photoName() const
+{
+        return fileName;
 }
 
 void PhotoItem::setRejected(bool b)
