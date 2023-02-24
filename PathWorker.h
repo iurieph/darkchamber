@@ -45,6 +45,7 @@ public:
 
 signals:
         void photoAvailable(PhotoItem *item);
+   
 private:
         QString rootPath;
         std::atomic<bool> isRunning;

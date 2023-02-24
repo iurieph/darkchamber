@@ -32,12 +32,12 @@ PhotoEditorToolBar::PhotoEditorToolBar(QWidget *parent)
         , exposureInfo{new QLabel(this)}
 {
         addWidget(exposureInfo);
-//        addSeparator();
+        addSeparator();
 
-//auto photoInfoAct = new QAction(QIcon::fromTheme("photoeditortoolbar-imageinfo"),
-//                                        tr("Image info"));
-// photoInfoAct->setCheckable(true);
-//      addAction(photoInfoAct);
+        auto showEffectsAct = new QAction(QIcon::fromTheme("gnome-util"),
+                                          tr("Show effects sidebar"));
+        showEffectsAct->setCheckable(true);
+        addAction(showEffectsAct);
 }
 
 void PhotoEditorToolBar::setExposureInfo(const QString &info)

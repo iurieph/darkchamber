@@ -83,12 +83,12 @@ MainWindow::MainWindow()
         setCentralWidget(widgetSplitter);
         resize(1300, 800);
 
-        QTimer *timer = new QTimer(this);
+        /*QTimer *timer = new QTimer(this);
         static int n;
         QObject::connect(timer, &QTimer::timeout, [](){
-                DARKCHAMBER_LOG_DEBUG() << "time" <<  n++;
+                DARKCHAMBER_LOG_DEBUG() << "GUI THREAD" <<  n++;
         });
-        timer->start(50);
+        timer->start(50);*/
 }
 
 MainWindow::~MainWindow()

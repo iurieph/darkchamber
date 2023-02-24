@@ -70,4 +70,3 @@ void PathWorker::run()
         DARKCHAMBER_LOG_DEBUG() << "exit";
 }
 
-
