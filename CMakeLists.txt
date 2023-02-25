@@ -34,6 +34,24 @@ add_executable(darkchamber
     PhotoModel.cpp
     LocationsView.h
     LocationsView.cpp
+    EffectGroupBox.h
+    EffectGroupBox.cpp
+    ExposureWidget.h
+    ExposureWidget.cpp
+    DehazeWidget.h
+    DehazeWidget.cpp
+    ShadowsHighlightsWidget.h
+    ShadowsHighlightsWidget.cpp
+    VignetteWidget.h
+    VignetteWidget.cpp
+    NoiseReductionWidget.h
+    NoiseReductionWidget.cpp
+    DefringeWidget.h
+    DefringeWidget.cpp
+    WhiteBalanceWidget.h
+    WhiteBalanceWidget.cpp
+    EffectsWidget.h
+    EffectsWidget.cpp
     Thumbnail.h
     Thumbnail.cpp
     PathWorker.h

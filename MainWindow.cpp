@@ -26,6 +26,7 @@
 #include "PhotoModel.h"
 #include "PhotoBrowser.h"
 #include "LocationsView.h"
+#include "EffectsWidget.h"
 #include "PhotoItem.h"
 #include "PhotoEditor.h"
 #include "Application.h"
@@ -56,7 +57,7 @@ MainWindow::MainWindow()
 	auto locationsView = new LocationsView;
 	locationsView->setModel(locationsModel);
 	addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, locationsView);
-	addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, new QDockWidget(tr("Collections")));
+	addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, new EffectsWidget);
 
         pathLoader->moveToThread(pathLoaderThread);
         QObject::connect(locationsView,
