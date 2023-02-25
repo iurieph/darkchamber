@@ -45,11 +45,18 @@ EffectsWidget::EffectsWidget(QWidget *parent)
         , m_defringeWidget{new DefringeWidget(this)}
         , m_whiteBalanceWidget{new WhiteBalanceWidget(this)}
 {
-              auto scrollArea = new QScrollArea(this);
+        auto scrollArea = new QScrollArea(this);
         scrollArea->setWidgetResizable(true);
         auto containerWidget = new QWidget(scrollArea);
         
         auto containerWidgetLayout = new QVBoxLayout;
+
+        QObject::connect(m_exposureWidget,
+                         ExposureWidget::effectUpdated,
+                         this,
+                         [m_exposureWidget](std::unique_ptr<ImageEffect> effect){
+                                 processImage(effect);
+                         } );
         containerWidgetLayout->addWidget(m_exposureWidget);
         //        containerWidgetLayout->addWidget(createSeparator());
         containerWidgetLayout->addWidget(m_dehazeWidget);
