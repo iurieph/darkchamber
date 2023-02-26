@@ -50,7 +50,7 @@ public:
         bool deleteFile(bool trash = true);
         bool protect(bool p = true);
         bool isProtected() const;
-        ImageData imageData() const;
+        const ImageData* imageData() const;
 
 signals:
         void photoRejected(bool b);
@@ -60,8 +60,9 @@ signals:
 private:
         QString photoPath;
         QString fileName;
-        QImage photoThumbnail;
         PhotoStateFile photoStateFile;
+        std::unique_ptr<ImageData> m_imageData;
+        QImage photoThumbnail;
         bool photoIsSelected;
 };
 

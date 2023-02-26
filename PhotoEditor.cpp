@@ -42,7 +42,7 @@ PhotoEditor::PhotoEditor(QWidget *parent)
 void PhotoEditor::setImage(PhotoItem *image)
 {
         imageViewer->setImage(image);
-        editorToolBar->setExposureInfo(image->imageData().getExposureInfo());
+        editorToolBar->setExposureInfo(image->imageData()->getExposureInfo());
 }
 
 void PhotoEditor::keyPressEvent(QKeyEvent *event)

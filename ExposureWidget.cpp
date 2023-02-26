@@ -85,7 +85,7 @@ void ExposureWidget::createLayout()
 
         connect(m_saturationSlider, &QSlider::valueChanged, [this](int value) {
                 m_saturationLabel->setText(tr("Saturation: %1").arg(value));
-                emit effectUpdated(std::move(ExposureWidget::getEffect()));
+                //                emit effectUpdated(std::move(ExposureWidget::getEffect()));
         });
 
         QVBoxLayout *layout = new QVBoxLayout(this);
@@ -100,10 +100,10 @@ void ExposureWidget::createLayout()
         layout->addWidget(m_colorModelComboBox); 
 }
 
-std::unique_ptr<ImageEffect> ExposureWidget::getEffect() const
+/*std::unique_ptr<ImageEffect> ExposureWidget::getEffect() const
 {
         return std::make_unique<ExposureEffect>(m_exposureSlider->value(),
                                                 m_lightnessSlider->value(),
                                                 m_contrastSlider->value(),
                                                 m_saturationSlider->value());
-}
+                                                }*/

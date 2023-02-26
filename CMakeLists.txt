@@ -3,6 +3,8 @@ project(darkchamber LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "-Wall ${CMAKE_CXX_FLAGS}")
+set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
 
 #set(Qt6Core_DIR "../../Qt/6.4.2/gcc_64/lib/cmake/Q65Core")
 #set(Qt6Gui_DIR "../../Qt/6.4.2/gcc_64/lib/cmake/Qt6Gui")
@@ -22,6 +24,8 @@ add_executable(darkchamber
     ImageDecoder.cpp
     DefaultImageDecoder.h
     DefaultImageDecoder.cpp
+    JpgImageDecoder.h
+    JpgImageDecoder.cpp
     LibRawImageDecoder.h
     LibRawImageDecoder.cpp
     ImageData.h

@@ -24,7 +24,6 @@
 #ifndef LIB_RAW_IMAGE_DECODER_H
 #define LIB_RAW_IMAGE_DECODER_H
 
-#include "DarkChamber.h"
 #include "ImageDecoder.h"
 
 #include "libraw/libraw.h"

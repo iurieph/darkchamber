@@ -36,7 +36,7 @@ class ExposureWidget : public EffectGroupBox
 
 public:
     explicit ExposureWidget(QWidget *parent = nullptr);
-    std::unique_ptr<ImageEffect> getEffect() const;
+        //    std::unique_ptr<ImageEffect> getEffect() const;
 
 signals:
     void exposureChanged(int value);

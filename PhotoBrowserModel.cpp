@@ -33,8 +33,8 @@ PhotoBrowserModel::PhotoBrowserModel(QGraphicsScene *parent, PhotoModel *model)
         : QObject{parent}
         , modelScene{parent}
         , photoModel{model}
-        , itemColumns{0}
         , thumbnailPadding{0}
+        , itemColumns{0}
 {
         QObject::connect(photoModel,
                          &PhotoModel::itemsAdded,
@@ -96,7 +96,18 @@ void PhotoBrowserModel::addItems(const std::vector<PhotoItem*> &items)
         for (const auto& item: items | std::views::filter(rejectedFilter)) {
                 auto sceneItem = new Thumbnail(item);
                 sceneItem->setGeometry(0, 0, thumbnailSize.width(), thumbnailSize.height());
-                modelItems.push_back({sceneItem, item});
+                auto newItem = std::make_pair(sceneItem, item);
+                auto pos = std::lower_bound(modelItems.begin(),
+                                            modelItems.end(),
+                                            newItem,
+                                            [](const auto &i, const auto &newItem) {
+                                                    return i.second->imageData()->takenDate()
+                                                            > newItem.second->imageData()->takenDate();
+                                            });
+                if (modelItems.empty())
+                        modelItems.push_back(newItem);
+                else 
+                        modelItems.insert(pos, newItem);
                 modelScene->addItem(sceneItem);
         }
         updatePositions();
@@ -136,7 +147,7 @@ void PhotoBrowserModel::updatePositions()
         int nRows = getRows();
         for (int row = 0; row < nRows; row++) {
                 for (int col = 0; col < itemColumns; col++) {
-                        auto index = itemColumns * row + col;
+                        decltype(modelItems.size()) index = itemColumns * row + col;
                         if (index < modelItems.size()) {
                                 auto sceneItem = modelItems[itemColumns * row + col].first;
                                 sceneItem->setPos(col * itemSize.width(), row * itemSize.height());
@@ -176,9 +187,11 @@ void PhotoBrowserModel::selectNext(bool direction, int n)
         if (i > -1) {
                 ModelItem nextItem;
                 if (direction)
-                        nextItem = (i + n < modelItems.size()) ? modelItems[i + n] : modelItems.back();
+                        nextItem = (static_cast<decltype(modelItems.size())>(i + n)
+                                    < modelItems.size()) ? modelItems[i + n] : modelItems.back();
                 else
-                        nextItem = (i - n > -1) ? modelItems[i - n] : modelItems.front();
+                        nextItem = static_cast<decltype(modelItems.size())>(i - n > -1)
+                                ? modelItems[i - n] : modelItems.front();
                 static_cast<Thumbnail*>(sceneSelectedItem)->getPhotoItem()->setSelected(false);
                 nextItem.second->setSelected(true);
                 for (auto &view : modelScene->views())
@@ -213,7 +226,7 @@ void PhotoBrowserModel::rejectSelectedItems()
         if (!sceneSelectedItems.isEmpty()) {
                 auto sceneLastDeleteItem = sceneSelectedItems.last();
                 auto i = indexOf(sceneLastDeleteItem);
-                if (i + 1 < modelItems.size()) {
+                if (static_cast<decltype(modelItems.size())>(i + 1) < modelItems.size()) {
                         auto nextItem = modelItems[i + 1];
                         nextItem.second->setSelected(true);
                         sceneNextItem = nextItem.first;
@@ -270,11 +283,12 @@ PhotoBrowserModel::findByPhotoItem(const PhotoItem *item)
 
 int PhotoBrowserModel::indexOf(const QGraphicsItem *item) const
 {
-        for (auto i = 0; i < modelItems.size(); i++) {
-                if (modelItems[i].first == item)
-                        return i;
-        }
-        return -1;
+    auto it = std::find_if(modelItems.begin(), modelItems.end(),
+                           [item](const auto& p) { return p.first == item; });
+
+    if (it != modelItems.end())
+            return std::distance(modelItems.begin(), it);
+    return -1;
 }
 
 void PhotoBrowserModel::viewImage()

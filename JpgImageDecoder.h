@@ -1,5 +1,5 @@
 /**
- * File name: RawImageInfo.cpp
+ * File name: JpgImageDecoder.h
  * Project: DarkChamber (A photo management software)
  *
  * Copyright (C) 2023 Iurie Nistor
@@ -21,53 +21,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "RawImageInfo.h"
+#ifndef JPG_IMAGE_DECODER_H
+#define JPG_IAMGE_DECODER_H
 
-RawImageInfo::RawImageInfo()
-        : isoVal{-1.0}
-        , apertureVal{-1.0}
-        , shutterVal{-1.0}        
+#include "ImageDecoder.h"
+
+class JpgImageDecoder : public ImageDecoder
 {
-}
+ public:
+        JpgImageDecoder(const QString &path);
+        QImage thumbnail() const override;
+        QImage image() const override;
 
-void RawImageInfo::setISO(double val)
-{
-        isoVal = val;
-}
+protected:
+        std::unique_ptr<RawImageInfo> loadImageInfo() override;
+        std::filesystem::file_time_type takenDate() const;
+};
 
-void RawImageInfo::setAperture(double val)
-{
-        apertureVal = val;
-}
-
-void RawImageInfo::setShutter(double val)
-{
-        shutterVal = val;
-}
-
-double RawImageInfo::getISO() const
-{
-        return isoVal;
-}
-
-double RawImageInfo::getAperture() const
-{
-        return apertureVal;
-}
-
-double RawImageInfo::getShutter() const
-{
-        return shutterVal;
-}
-
-void RawImageInfo::setTakenDate(const std::filesystem::file_time_type& date)
-{
-        m_takenDate = date;
-}
-
-const std::filesystem::file_time_type& RawImageInfo::takenDate() const
-{
-        return m_takenDate;
-}
-        
-
+#endif // JPG_IAMGE_DECODER_H

@@ -36,10 +36,13 @@ public:
         double getISO() const;
         double getAperture() const;
         double getShutter() const;
+        void setTakenDate(const std::filesystem::file_time_type& date);
+        const std::filesystem::file_time_type& takenDate() const;
 private:
         double isoVal;
         double apertureVal;
         double shutterVal;
+        std::filesystem::file_time_type m_takenDate;
 };
 
 #endif // RAW_IMAGE_INFO

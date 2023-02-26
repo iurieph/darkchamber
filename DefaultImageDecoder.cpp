@@ -28,10 +28,12 @@
 DefaultImageDecoder::DefaultImageDecoder(const QString &path)
         : ImageDecoder(path)
 {
+        DARKCHAMBER_LOG_DEBUG() << path;
 }
 
 QImage DefaultImageDecoder::thumbnail() const
 {
+        DARKCHAMBER_LOG_DEBUG() << path(); 
         return QImage(path()).scaled(150, 150,
                                     Qt::KeepAspectRatio/*,
                                                          Qt::SmoothTransformation*/);

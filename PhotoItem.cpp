@@ -33,7 +33,8 @@ PhotoItem::PhotoItem(const QString &path, QObject *parent)
         , photoPath{path}
         , fileName{QFileInfo(path).fileName()}
         , photoStateFile{PhotoStateFile(photoPath)}
-        , photoThumbnail{ImageData(path).thumbnail()}
+        , m_imageData{std::make_unique<ImageData>(path)}
+        , photoThumbnail{m_imageData->thumbnail()}
         , photoIsSelected{false}
 {
 }
@@ -110,7 +111,7 @@ bool PhotoItem::deleteFile(bool trash)
                 return QFile::remove(path());
 }
 
-ImageData PhotoItem::imageData() const
+const ImageData* PhotoItem::imageData() const
 {
-        return ImageData(path());
+        return m_imageData.get();
 }

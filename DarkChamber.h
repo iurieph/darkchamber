@@ -32,6 +32,9 @@
 #include <utility>
 #include <ranges>
 #include <limits>
+#include <chrono>
+#include <filesystem>
+#include <algorithm>
 
 #include <QDebug>
 

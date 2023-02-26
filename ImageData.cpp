@@ -25,16 +25,20 @@
 
 #include "DefaultImageDecoder.h"
 #include "LibRawImageDecoder.h"
+#include "JpgImageDecoder.h"
 
 #include <QFileInfo>
 
 ImageData::ImageData(const QString &path)
         : imageDecoder{nullptr}
 {
+        DARKCHAMBER_LOG_DEBUG() << path;
         QFileInfo info(path);
         if (info.suffix().toUpper() == "CR3")
                 imageDecoder = std::make_unique<LibRawImageDecoder>(path);
-        else 
+        else if (info.suffix().toUpper() == "JPG" || info.suffix().toUpper() == "JPEG")
+                imageDecoder = std::make_unique<JpgImageDecoder>(path);
+        else
                 imageDecoder = std::make_unique<DefaultImageDecoder>(path);
 }
 
@@ -45,6 +49,9 @@ const QString& ImageData::path() const
 
 QImage ImageData::thumbnail() const
 {
+        if (!imageDecoder)
+                DARKCHAMBER_LOG_DEBUG() << "NULLLLLL";
+        DARKCHAMBER_LOG_DEBUG() << imageDecoder->path(); 
         auto img = imageDecoder->thumbnail();
         if (!img.isNull() && img.size().isValid())
                 return imageDecoder->thumbnail().scaled(150, 150,
@@ -60,9 +67,7 @@ QImage ImageData::image() const
 
 double ImageData::getISO() const
 {
-        if (imageDecoder->imageInfo())
-                return imageDecoder->imageInfo()->getISO();
-        return 0;
+        return imageDecoder->imageInfo()->getISO();
 }
 
 double ImageData::getAperture() const
@@ -74,9 +79,7 @@ double ImageData::getAperture() const
 
 double ImageData::getShutter() const
 {
-        if (imageDecoder->imageInfo())
-                return imageDecoder->imageInfo()->getShutter();
-        return 0;
+        return imageDecoder->imageInfo()->getShutter();
 }
 
 QString ImageData::getExposureInfo() const
@@ -103,4 +106,9 @@ QString ImageData::getExposureInfo() const
         }
 
         return QString("ISO %1  f/%2  1/%3").arg(isoStr).arg(apertureStr).arg(shutterStr);
+}
+
+const std::filesystem::file_time_type& ImageData::takenDate() const
+{
+        return imageDecoder->imageInfo()->takenDate();
 }

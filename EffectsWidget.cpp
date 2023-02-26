@@ -51,12 +51,12 @@ EffectsWidget::EffectsWidget(QWidget *parent)
         
         auto containerWidgetLayout = new QVBoxLayout;
 
-        QObject::connect(m_exposureWidget,
-                         ExposureWidget::effectUpdated,
-                         this,
-                         [m_exposureWidget](std::unique_ptr<ImageEffect> effect){
-                                 processImage(effect);
-                         } );
+        //        QObject::connect(m_exposureWidget,
+        //                 ExposureWidget::effectUpdated,
+        //                 this,
+        //                 [m_exposureWidget](std::unique_ptr<ImageEffect> effect){
+        //                         processImage(effect);
+        //                 } );
         containerWidgetLayout->addWidget(m_exposureWidget);
         //        containerWidgetLayout->addWidget(createSeparator());
         containerWidgetLayout->addWidget(m_dehazeWidget);

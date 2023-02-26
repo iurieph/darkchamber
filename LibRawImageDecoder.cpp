@@ -26,6 +26,7 @@
 LibRawImageDecoder::LibRawImageDecoder(const QString &path)
         : ImageDecoder(path)
 {
+        DARKCHAMBER_LOG_DEBUG() << path;
 }
 
 std::unique_ptr<LibRaw> LibRawImageDecoder::getProcessor() const
@@ -102,6 +103,11 @@ std::unique_ptr<RawImageInfo> LibRawImageDecoder::loadRawInfo(const std::unique_
         info->setISO(processor->imgdata.other.iso_speed);
         info->setShutter(processor->imgdata.other.shutter);
         info->setAperture(processor->imgdata.other.aperture);
+        
+        auto seconds = std::chrono::seconds(processor->imgdata.other.timestamp);
+        auto duration = std::chrono::duration_cast<std::filesystem::file_time_type::duration>(seconds);
+        info->setTakenDate(std::filesystem::file_time_type(duration));
+        
         return info;
 }
 

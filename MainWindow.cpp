@@ -113,8 +113,8 @@ void MainWindow::showImage(PhotoItem *image)
                                  &PhotoEditor::nextImage,
                                  this,
                                  &MainWindow::showNextImage);
-                setWindowTitle("DarkChamber - "+ image->photoName());
         }
+        setWindowTitle("DarkChamber - "+ image->photoName());
         imageViewer->setImage(image);
 }
 
