@@ -43,6 +43,8 @@ public:
 public slots:
         void addPhoto(PhotoItem *item);
         void deletePermanelty(const std::vector<PhotoItem*> &items, bool trash);
+        void moveTo(const QString path, bool copy = true);
+        void photoModel->moveSelectedFiles(path, bool = copy);
         void protect(const std::vector<PhotoItem*> &items, bool p);
         void clearModel();
 

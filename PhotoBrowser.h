@@ -50,6 +50,8 @@ protected:
         void contextMenuEvent(QContextMenuEvent *event);
         void deletePermanently();
         void moveToTrash();
+        void copyTo();
+        void moveTo();
         void protectFile();
 
 private:
@@ -58,6 +60,8 @@ private:
         PhotoBrowserModel *browserModel;
         QAction* deleteAct;
         QAction* trashAct;
+        QAction* copyAct;
+        QAction* moveAct;
         QAction* protectAct;
 };
 

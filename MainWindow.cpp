@@ -42,9 +42,9 @@
 MainWindow::MainWindow()
         : QMainWindow()
         , photoModel{nullptr}
-        , stackedWidget{nullptr}
         , photoBrowser{nullptr}
         , imageViewer{nullptr}
+        , stackedWidget{nullptr}
         , widgetSplitter{new QSplitter(Qt::Vertical, this)}
         , pathLoaderThread{new QThread(this)}
         , pathLoader{new PathLoader()}

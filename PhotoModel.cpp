@@ -65,6 +65,23 @@ void PhotoModel::deletePermanelty(const std::vector<PhotoItem*> &items, bool tra
         }
 }
 
+void PhotoModel::moveTo(const QString path, bool copy)
+{
+        std::vector<PhotoItem*> itemsToRemove;
+        for (auto it = photoItemList.begin(); it != photoItemList.end(); ++it) {
+                if (item->isSelected() && item->moveFile(path, copy)) {
+                        if (!copy)
+                                itemsToRemove.emplace_back(*it);
+                        it = photoItemList.erase(*it);
+                } else {
+                        ++it;
+                }
+        }
+        
+        if (!itemsToRemove.empty())
+                emit itemsRemoved(itemsToRemove);
+}
+
 void PhotoModel::protect(const std::vector<PhotoItem*> &items, bool p)
 {
         if (items.empty())

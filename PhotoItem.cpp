@@ -104,9 +104,23 @@ bool PhotoItem::isProtected() const
 
 bool PhotoItem::deleteFile(bool trash)
 {
+        if (isProtected())
+                return false;
+                
         if (trash)
                 //QFile::moveToTrash(path());
                 return false;
+        else
+                return QFile::remove(path());
+}
+
+bool PhotoItem::moveFile(const QString &path, bool copy)
+{
+        if (!copy && isProtected())
+                return false;
+        
+        if (copy)
+                return QFile::copy();
         else
                 return QFile::remove(path());
 }

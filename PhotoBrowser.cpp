@@ -37,6 +37,8 @@ PhotoBrowser::PhotoBrowser(PhotoModel *model, QWidget *parent)
         , thumbnailPadding{40}
         , deleteAct{nullptr}
         , trashAct{nullptr}
+        , copyAct{nullptr}
+        , moveAct{nullptr}
         , protectAct{nullptr}
 {
         auto scene = new QGraphicsScene(this);
@@ -52,25 +54,34 @@ PhotoBrowser::PhotoBrowser(PhotoModel *model, QWidget *parent)
 
 void PhotoBrowser::createActions()
 {
-    // Delete action, i.e. permanently delete.
-    deleteAct = new QAction(tr("Delete"), this);
-    deleteAct->setStatusTip(tr("Delete permanently the files"));
-    connect(deleteAct, &QAction::triggered, this, &PhotoBrowser::deletePermanently);
+        // Delete action, i.e. permanently delete.
+        deleteAct = new QAction(tr("Delete"), this);
+        deleteAct->setStatusTip(tr("Delete permanently the files"));
+        connect(deleteAct, &QAction::triggered, this, &PhotoBrowser::deletePermanently);
 
-    // Trash action.
-    trashAct = new QAction(tr("Move to Trash"), this);
-    trashAct->setStatusTip(tr("Move files to trash"));
-    connect(trashAct, &QAction::triggered, this, &PhotoBrowser::moveToTrash);
+        // Trash action.
+        trashAct = new QAction(tr("Move to Trash"), this);
+        trashAct->setStatusTip(tr("Move files to trash"));
+        connect(trashAct, &QAction::triggered, this, &PhotoBrowser::moveToTrash);
 
-    // Protect file action
-    protectAct = new QAction(tr("Protect"), this);
-    protectAct->setStatusTip(tr("Protect the file(s) from deletion or change"));
-    connect(protectAct, &QAction::triggered, this, &PhotoBrowser::protectFile);
+        // Copy files action.
+        copyAct = new QAction(tr("Copy to..."), this);
+        trashAct->setStatusTip(tr("Copy to a destination"));
+        connect(copyAct, &QAction::triggered, this, &PhotoBrowser::copyTo);
+
+        // Move files action.
+        moveAct = new QAction(tr("Move to..."), this);
+        trashAct->setStatusTip(tr("Move files to a destination"));
+        connect(moveAct, &QAction::triggered, this, &PhotoBrowser::moveTo);
+
+        // Protect file action
+        protectAct = new QAction(tr("Protect"), this);
+        protectAct->setStatusTip(tr("Protect the file(s) from deletion or change"));
+        connect(protectAct, &QAction::triggered, this, &PhotoBrowser::protectFile);
 }
 
 void PhotoBrowser::resizeEvent(QResizeEvent *event)
 {
-        DARKCHAMBER_LOG_DEBUG();
         browserModel->setColumns(getColumns());
 }
 
@@ -89,13 +100,13 @@ void PhotoBrowser::keyPressEvent(QKeyEvent *event)
                 break;
 	case Qt::Key_Up:
                 browserModel->selectUp();
-	  break;
+                break;
 	case Qt::Key_Down:
                 browserModel->selectDown();
-	  break;
+                break;
         case Qt::Key_Return:
                 browserModel->viewImage();
-	  break;
+                break;
         }
 }
 
@@ -106,6 +117,10 @@ void PhotoBrowser::contextMenuEvent(QContextMenuEvent *event)
                 QMenu menu(this);
                 menu.addAction(deleteAct);
                 menu.addAction(trashAct);
+                menu.addAction(copyAct);
+                menu.addAction(moveAct);
+                menu.addAction(moveAct);
+                menu.addSeparator();
                 menu.addAction(protectAct);
                 menu.exec(event->globalPos());
         }
@@ -123,18 +138,28 @@ void PhotoBrowser::deletePermanently()
 
 void PhotoBrowser::moveToTrash()
 {
-//        browserModel->deleteSelectedItems();
+        //        browserModel->deleteSelectedItems();
+}
+
+void PhotoBrowser::copyTo()
+{
+        browserModel->moveSelectedFiles(destPath);
+}
+
+void PhotoBrowser::moveTo()
+{
+        browserModel->moveSelectedFiles(destPath, true);
 }
 
 void PhotoBrowser::protectFile()
 {
-//        browserModel->protectSelectedItems();
+        //        browserModel->protectSelectedItems();
 }
 
 int PhotoBrowser::getColumns() const
 {
         auto itemSize = QSize{thumbnailSize.width() + thumbnailPadding / 2,
-                              thumbnailSize.height() + thumbnailPadding / 2};
+                thumbnailSize.height() + thumbnailPadding / 2};
         if (width() < itemSize.width())
                 return 1;
         return width() / itemSize.width();

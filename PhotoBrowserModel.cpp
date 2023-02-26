@@ -265,6 +265,11 @@ void PhotoBrowserModel::deleteSelectedItems(bool trash)
         
 }
 
+void PhotoBrowserModel::moveSelectedFiles(const QString path, bool copy = true)
+{
+        photoModel->moveSelectedFiles(path, copy);
+}
+
 PhotoBrowserModel::ModelItems::iterator
 PhotoBrowserModel::findBySceneItem(const QGraphicsItem *item)
 {
