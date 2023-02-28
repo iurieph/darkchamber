@@ -57,7 +57,7 @@ public:
         bool selectItemAt(const QPointF &p);
         void deleteSelectedItems(bool trash = true);
         void protectSelectedItems(bool protect = true);
-        void moveSelectedFiles(bool copy = true);
+        void moveSelectedFiles(const QString &path, bool copy = true);
 
 public slots:
         void addItems(const std::vector<PhotoItem*> &items);

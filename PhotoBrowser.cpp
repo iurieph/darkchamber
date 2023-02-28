@@ -30,6 +30,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QMessageBox>
+#include <QFileDialog>
 
 PhotoBrowser::PhotoBrowser(PhotoModel *model, QWidget *parent)
         : QGraphicsView(parent)
@@ -143,12 +144,20 @@ void PhotoBrowser::moveToTrash()
 
 void PhotoBrowser::copyTo()
 {
-        browserModel->moveSelectedFiles(destPath);
+        auto destPath = QFileDialog::getExistingDirectory(
+                           this,
+                           tr("Select Destination Directory"), ".");
+        if (!destPath.isEmpty())
+                browserModel->moveSelectedFiles(destPath);
 }
 
 void PhotoBrowser::moveTo()
 {
-        browserModel->moveSelectedFiles(destPath, true);
+        auto destPath = QFileDialog::getExistingDirectory(
+                this,
+                tr("Select Destination Directory"), ".");
+        if (!destPath.isEmpty())
+                browserModel->moveSelectedFiles(destPath, false);
 }
 
 void PhotoBrowser::protectFile()

@@ -31,8 +31,8 @@
 
 PathLoader::PathLoader(QObject* parent)
         : QObject(parent)
-        , loadRecursively{false}
         , pathWorker{new PathWorker(this)}
+        , loadRecursively{false}
         , threadPool{QThreadPool::globalInstance()}
         , isSetPath{false}
 {

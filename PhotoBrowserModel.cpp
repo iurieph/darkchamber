@@ -265,7 +265,7 @@ void PhotoBrowserModel::deleteSelectedItems(bool trash)
         
 }
 
-void PhotoBrowserModel::moveSelectedFiles(const QString path, bool copy = true)
+void PhotoBrowserModel::moveSelectedFiles(const QString &path, bool copy)
 {
         photoModel->moveSelectedFiles(path, copy);
 }

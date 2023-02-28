@@ -27,6 +27,7 @@
 #include <QImage>
 #include <QFile>
 #include <QFileInfo>
+#include <QDir>
 
 PhotoItem::PhotoItem(const QString &path, QObject *parent)
         : QObject(parent)
@@ -99,7 +100,8 @@ bool PhotoItem::protect(bool p)
 
 bool PhotoItem::isProtected() const
 {
-        return QFileInfo(path()).isWritable();
+        QFileInfo info(path());
+        return !info.isWritable();
 }
 
 bool PhotoItem::deleteFile(bool trash)
@@ -114,15 +116,18 @@ bool PhotoItem::deleteFile(bool trash)
                 return QFile::remove(path());
 }
 
-bool PhotoItem::moveFile(const QString &path, bool copy)
+bool PhotoItem::moveFile(const QString &destPath, bool copy)
 {
         if (!copy && isProtected())
                 return false;
-        
+
+        auto destFile = destPath
+                + QDir::separator()
+                + QFileInfo(path()).fileName();
         if (copy)
-                return QFile::copy();
+                return QFile::copy(path(), destFile);
         else
-                return QFile::remove(path());
+                return QFile::rename(path(), destFile);
 }
 
 const ImageData* PhotoItem::imageData() const

@@ -46,7 +46,7 @@ void PhotoModel::deletePermanelty(const std::vector<PhotoItem*> &items, bool tra
 {
         if (items.empty())
                 return;
-        std::vector<PhotoItem*> itemsToRemove;
+        std::vector<PhotoItem*> removedItems;
         for (auto &item: items) {
                 if (item->deleteFile(trash)) {
                         auto it = std::find_if(photoItemList.begin(),
@@ -54,32 +54,36 @@ void PhotoModel::deletePermanelty(const std::vector<PhotoItem*> &items, bool tra
                                                [item](const auto &i) { return i == item; });
                         if (it != photoItemList.end()) {
                                 photoItemList.erase(it);
-                                itemsToRemove.emplace_back(item);
+                                removedItems.emplace_back(item);
                         }
                 }
         }
         
-        if (!itemsToRemove.empty()) {
-                emit itemsRemoved(itemsToRemove);
-                DARKCHAMBER_LOG_DEBUG();
+        if (!removedItems.empty()) {
+                emit itemsRemoved(removedItems);
+                for (auto &item: removedItems)
+                        delete item;
         }
 }
 
-void PhotoModel::moveTo(const QString path, bool copy)
+void PhotoModel::moveSelectedFiles(const QString destPath, bool copy)
 {
-        std::vector<PhotoItem*> itemsToRemove;
-        for (auto it = photoItemList.begin(); it != photoItemList.end(); ++it) {
-                if (item->isSelected() && item->moveFile(path, copy)) {
+        std::vector<PhotoItem*> removedItems;
+        for (auto it = photoItemList.begin(); it != photoItemList.end();) {
+                if ((*it)->isSelected() && (*it)->moveFile(destPath, copy)) {
                         if (!copy)
-                                itemsToRemove.emplace_back(*it);
-                        it = photoItemList.erase(*it);
+                                removedItems.emplace_back(*it);
+                        it = photoItemList.erase(it);
                 } else {
                         ++it;
                 }
         }
         
-        if (!itemsToRemove.empty())
-                emit itemsRemoved(itemsToRemove);
+        if (!removedItems.empty()) {
+                emit itemsRemoved(removedItems);
+                for (auto &item: removedItems)
+                        delete item;
+        }
 }
 
 void PhotoModel::protect(const std::vector<PhotoItem*> &items, bool p)

@@ -48,7 +48,7 @@ public:
         void setSelected(bool b = true);
         bool isSelected() const;
         bool deleteFile(bool trash = true);
-        bool moveFile(bool copy = true);
+        bool moveFile(const QString &destPath, bool copy = true);
         bool protect(bool p = true);
         bool isProtected() const;
         const ImageData* imageData() const;
