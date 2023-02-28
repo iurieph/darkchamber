@@ -22,6 +22,7 @@
  */
 
 #include "JpgImageDecoder.h"
+#include "Application.h"
 
 #include <QImage>
 #include <QFile>
@@ -36,10 +37,11 @@ JpgImageDecoder::JpgImageDecoder(const QString &path)
 
 QImage JpgImageDecoder::thumbnail() const
 {
-        DARKCHAMBER_LOG_DEBUG() << path(); 
-        return QImage(path()).scaled(150, 150,
-                                    Qt::KeepAspectRatio/*,
-                                                         Qt::SmoothTransformation*/);
+        DARKCHAMBER_LOG_DEBUG() << path();
+        auto size = DarkChamberApplication::getAppInstance()->thumbnailsSize();
+        return QImage(path()).scaled(size,
+                                     Qt::KeepAspectRatioByExpanding/*,
+                                                          Qt::SmoothTransformation*/);
 }
 
 QImage JpgImageDecoder::image() const

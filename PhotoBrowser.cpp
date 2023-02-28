@@ -25,6 +25,7 @@
 #include "PhotoBrowser.h"
 #include "PhotoBrowserModel.h"
 #include "PhotoModel.h"
+#include "Application.h"
 
 #include <QKeyEvent>
 #include <QAction>
@@ -34,7 +35,7 @@
 
 PhotoBrowser::PhotoBrowser(PhotoModel *model, QWidget *parent)
         : QGraphicsView(parent)
-        , thumbnailSize{150, 150}
+        , thumbnailSize{DarkChamberApplication::getAppInstance()->thumbnailsSize()}
         , thumbnailPadding{40}
         , deleteAct{nullptr}
         , trashAct{nullptr}
@@ -44,10 +45,11 @@ PhotoBrowser::PhotoBrowser(PhotoModel *model, QWidget *parent)
 {
         auto scene = new QGraphicsScene(this);
         setScene(scene);
-        browserModel = new PhotoBrowserModel(scene, model);
+        browserModel = new PhotoBrowserModel(scene, model);        
         browserModel->setThumbnailSize(thumbnailSize);
         browserModel->setThumbnailPadding(thumbnailPadding);
         browserModel->setColumns(getColumns());
+        
         setMinimumSize(thumbnailSize + QSize(thumbnailPadding, thumbnailPadding));
         setAlignment(Qt::AlignLeft | Qt::AlignTop);
         createActions();

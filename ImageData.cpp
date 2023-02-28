@@ -26,6 +26,7 @@
 #include "DefaultImageDecoder.h"
 #include "LibRawImageDecoder.h"
 #include "JpgImageDecoder.h"
+#include "Application.h"
 
 #include <QFileInfo>
 
@@ -49,14 +50,14 @@ const QString& ImageData::path() const
 
 QImage ImageData::thumbnail() const
 {
-        if (!imageDecoder)
-                DARKCHAMBER_LOG_DEBUG() << "NULLLLLL";
         DARKCHAMBER_LOG_DEBUG() << imageDecoder->path(); 
         auto img = imageDecoder->thumbnail();
-        if (!img.isNull() && img.size().isValid())
-                return imageDecoder->thumbnail().scaled(150, 150,
-                                                        Qt::KeepAspectRatio/*,
+        if (!img.isNull() && img.size().isValid()) {
+                auto imgSize = DarkChamberApplication::getAppInstance()->thumbnailsSize();
+                return imageDecoder->thumbnail().scaled(imgSize,
+                                                        Qt::KeepAspectRatioByExpanding/*,
                                                                              Qt::SmoothTransformation*/);
+        }
         return QImage();
 }
 

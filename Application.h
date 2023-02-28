@@ -28,6 +28,7 @@
 
 #include <QApplication>
 #include <QSemaphore>
+#include <QSize>
 
 class DarkChamberApplication: public QApplication
 {
@@ -37,8 +38,10 @@ public:
         static int guiSemResourceSize();
         static void releaseGuiSemaphore();
         static QSemaphore& guiSemaphore();
+        const QSize& thumbnailsSize() const;
 private:
         static QSemaphore s_mainThreadSemophore;
+        QSize m_thumbnailsSize;
 };
 
 #endif // DARK_CHAMBER_APPLICATION_H

@@ -22,6 +22,7 @@
  */
 
 #include "DefaultImageDecoder.h"
+#include "Application.h"
 
 #include <QImage>
 
@@ -33,9 +34,11 @@ DefaultImageDecoder::DefaultImageDecoder(const QString &path)
 
 QImage DefaultImageDecoder::thumbnail() const
 {
-        DARKCHAMBER_LOG_DEBUG() << path(); 
-        return QImage(path()).scaled(150, 150,
-                                    Qt::KeepAspectRatio/*,
+        DARKCHAMBER_LOG_DEBUG() << path();
+
+        auto size = DarkChamberApplication::getAppInstance()->thumbnailsSize();
+        return QImage(path()).scaled(size,
+                                    Qt::KeepAspectRatioByExpanding/*,
                                                          Qt::SmoothTransformation*/);
 }
 

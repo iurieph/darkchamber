@@ -38,6 +38,8 @@
 #include <QSplitter>
 #include <QThread>
 #include <QTimer>
+#include <QAction>
+#include <QToolBar>
 
 MainWindow::MainWindow()
         : QMainWindow()
@@ -90,6 +92,7 @@ MainWindow::MainWindow()
                 DARKCHAMBER_LOG_DEBUG() << "GUI THREAD" <<  n++;
         });
         timer->start(50);*/
+        createToolBars();
 }
 
 MainWindow::~MainWindow()
@@ -102,7 +105,14 @@ MainWindow::~MainWindow()
         delete pathLoader;
 }
 
-#include <QDebug>
+void MainWindow::createToolBars()
+{
+        // Browser toolbar
+        auto toolbar = addToolBar("Browser Toolbar");
+        auto action = new QAction(QIcon::fromTheme("info"),
+                                  tr("Show photo extif info"));
+        toolbar->addAction(action);
+}
 
 void MainWindow::showImage(PhotoItem *image)
 {

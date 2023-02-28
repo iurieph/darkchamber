@@ -25,6 +25,7 @@
 
 DarkChamberApplication::DarkChamberApplication(int &argc, char **argv, int falgs)
         : QApplication(argc, argv, falgs)
+        , m_thumbnailsSize(150, 150)
 {
 }
 
@@ -49,3 +50,8 @@ QSemaphore& DarkChamberApplication::guiSemaphore()
 }
 
 QSemaphore DarkChamberApplication::s_mainThreadSemophore(DarkChamberApplication::guiSemResourceSize());
+
+const QSize& DarkChamberApplication::thumbnailsSize() const
+{
+        return m_thumbnailsSize;
+}

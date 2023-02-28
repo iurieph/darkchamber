@@ -72,12 +72,14 @@ protected:
         int indexOf(const QGraphicsItem *item) const;
         ModelItems::iterator findBySceneItem(const QGraphicsItem *item);
         ModelItems::iterator findByPhotoItem(const PhotoItem *item);
+        const QSize& thumbnailSize() const;
+        int thumbnailPadding() const;
 
 private:
         QGraphicsScene *modelScene;
         PhotoModel *photoModel;
-        QSize thumbnailSize;
-        int thumbnailPadding;
+        QSize m_thumbnailSize;
+        int m_thumbnailPadding;
         int itemColumns;
         //        std::vector<PhotoFilter> photoFilters;
         ModelItems modelItems;

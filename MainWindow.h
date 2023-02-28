@@ -45,6 +45,7 @@ public:
 
 protected:
         void keyPressEvent(QKeyEvent *event) override;
+        void createToolBars();
 
 protected slots:
         void showImage(PhotoItem *iamge);

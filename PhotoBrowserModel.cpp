@@ -33,7 +33,7 @@ PhotoBrowserModel::PhotoBrowserModel(QGraphicsScene *parent, PhotoModel *model)
         : QObject{parent}
         , modelScene{parent}
         , photoModel{model}
-        , thumbnailPadding{0}
+        , m_thumbnailPadding{0}
         , itemColumns{0}
 {
         QObject::connect(photoModel,
@@ -52,15 +52,15 @@ PhotoBrowserModel::PhotoBrowserModel(QGraphicsScene *parent, PhotoModel *model)
 
 void PhotoBrowserModel::setThumbnailSize(const QSize &size)
 {
-        thumbnailSize = size;
+        m_thumbnailSize = size + QSize(0, 30);
         for (auto &item: modelItems)
-                item.first->setGeometry(0, 0, thumbnailSize.width(), thumbnailSize.height());
+                item.first->setGeometry(0, 0, m_thumbnailSize.width(), m_thumbnailSize.height());
         updatePositions();
 }
 
 void PhotoBrowserModel::setThumbnailPadding(int padding)
 {        
-        thumbnailPadding = padding;
+        m_thumbnailPadding = padding;
         updatePositions();
 }
 
@@ -95,7 +95,7 @@ void PhotoBrowserModel::addItems(const std::vector<PhotoItem*> &items)
         auto rejectedFilter = [](const PhotoItem *item) -> bool { return !item->isRejected(); };
         for (const auto& item: items | std::views::filter(rejectedFilter)) {
                 auto sceneItem = new Thumbnail(item);
-                sceneItem->setGeometry(0, 0, thumbnailSize.width(), thumbnailSize.height());
+                sceneItem->setGeometry(0, 0, thumbnailSize().width(), thumbnailSize().height());
                 auto newItem = std::make_pair(sceneItem, item);
                 auto pos = std::lower_bound(modelItems.begin(),
                                             modelItems.end(),
@@ -142,8 +142,8 @@ void PhotoBrowserModel::updatePositions()
         if (itemColumns < 1)
                 return;
 
-        auto itemSize = QSize{thumbnailSize.width() + thumbnailPadding / 2,
-                         thumbnailSize.height() + thumbnailPadding / 2};
+        auto itemSize = QSize{thumbnailSize().width() + thumbnailPadding() / 2,
+                              thumbnailSize().height() + thumbnailPadding() / 2};
         int nRows = getRows();
         for (int row = 0; row < nRows; row++) {
                 for (int col = 0; col < itemColumns; col++) {
@@ -301,4 +301,14 @@ void PhotoBrowserModel::viewImage()
         auto sceneSelectedItems = modelScene->selectedItems();
         if (!sceneSelectedItems.isEmpty())
                 emit photoModel->viewImage(static_cast<Thumbnail*>(sceneSelectedItems.first())->getPhotoItem());
+}
+
+const QSize& PhotoBrowserModel::thumbnailSize() const
+{
+        return m_thumbnailSize;
+}
+
+int PhotoBrowserModel::thumbnailPadding() const
+{
+        return m_thumbnailPadding;
 }

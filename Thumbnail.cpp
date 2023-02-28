@@ -23,6 +23,7 @@
 
 #include "Thumbnail.h"
 #include "PhotoItem.h"
+#include "Application.h"
 
 #include <QPainter>
 
@@ -44,21 +45,18 @@ void Thumbnail::paint(QPainter *painter,
 {
         if (photoItem->thumbnail().isNull())
                 return;
+        painter->fillRect(rect(), Qt::white);
+        
         int x = (rect().width() - photoItem->thumbnail().width()) / 2;
-        int y = rect().height() - photoItem->thumbnail().height();
-        painter->drawImage(x, y, photoItem->thumbnail());
+        painter->drawImage(x, 3, photoItem->thumbnail());
+        
         auto pen = painter->pen();
-        pen.setWidth(2);
-        pen.setColor({255, 255, 255});
-        painter->setPen(pen);
-
-        if (isSelected()) {
-                auto pen = painter->pen();
-                pen.setWidth(2);
+        if (isSelected())
                 pen.setColor({0, 0, 255});
-                painter->setPen(pen);
-                painter->drawRect(rect());
-        }
+        else
+                pen.setColor(Qt::gray);
+        painter->setPen(pen);
+        painter->drawRect(rect());
 }
 
 void Thumbnail::selectItem(bool b)

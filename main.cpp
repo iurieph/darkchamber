@@ -22,11 +22,11 @@
  */
 
 #include "MainWindow.h"
-#include <QApplication>
+#include "Application.h"
 
 int main(int argc, char **argv)
 {
-        QApplication app(argc, argv);
+        DarkChamberApplication app(argc, argv);
         MainWindow mainWin;
         mainWin.show();
         return app.exec();
