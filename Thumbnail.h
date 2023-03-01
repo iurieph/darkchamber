@@ -29,6 +29,8 @@
 class QPainter;
 class QStyleOptionGraphicsItem;
 class PhotoItem;
+class QGraphicsTextItem;
+class QGraphicsImageItem;
 
 class Thumbnail : public QGraphicsWidget
 {
@@ -37,6 +39,7 @@ class Thumbnail : public QGraphicsWidget
 public:
         explicit Thumbnail(PhotoItem *item);
         PhotoItem* getPhotoItem() const;
+        void setSize(const QSize &size);
 
 protected slots:
         void selectItem(bool b = true);
@@ -45,12 +48,18 @@ protected:
         void paint(QPainter *painter,
                    const QStyleOptionGraphicsItem *option,
                    QWidget *widget = nullptr) override;
+        void drawFileName(int yOffset, QPainter *painter);
         QVariant itemChange(QGraphicsItem::GraphicsItemChange change,
                             const QVariant &value) override;
         void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+        void resizeEvent(QGraphicsSceneResizeEvent *event) override;
 private:
         PhotoItem *photoItem;
         QString myId;
+        int m_borderWidth;
+        int m_padding;
+        QGraphicsTextItem *m_exposureInfo;
+        QGraphicsPixmapItem *m_thumbnailImage;
 };
 
 #endif // PHOTO_THUMBNAIL_H

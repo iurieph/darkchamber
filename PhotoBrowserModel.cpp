@@ -52,9 +52,9 @@ PhotoBrowserModel::PhotoBrowserModel(QGraphicsScene *parent, PhotoModel *model)
 
 void PhotoBrowserModel::setThumbnailSize(const QSize &size)
 {
-        m_thumbnailSize = size + QSize(0, 30);
+        m_thumbnailSize = size;
         for (auto &item: modelItems)
-                item.first->setGeometry(0, 0, m_thumbnailSize.width(), m_thumbnailSize.height());
+                item.first->setSize(m_thumbnailSize);
         updatePositions();
 }
 
@@ -95,7 +95,7 @@ void PhotoBrowserModel::addItems(const std::vector<PhotoItem*> &items)
         auto rejectedFilter = [](const PhotoItem *item) -> bool { return !item->isRejected(); };
         for (const auto& item: items | std::views::filter(rejectedFilter)) {
                 auto sceneItem = new Thumbnail(item);
-                sceneItem->setGeometry(0, 0, thumbnailSize().width(), thumbnailSize().height());
+                sceneItem->setSize(m_thumbnailSize);
                 auto newItem = std::make_pair(sceneItem, item);
                 auto pos = std::lower_bound(modelItems.begin(),
                                             modelItems.end(),

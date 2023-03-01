@@ -55,7 +55,7 @@ QImage ImageData::thumbnail() const
         if (!img.isNull() && img.size().isValid()) {
                 auto imgSize = DarkChamberApplication::getAppInstance()->thumbnailsSize();
                 return imageDecoder->thumbnail().scaled(imgSize,
-                                                        Qt::KeepAspectRatioByExpanding/*,
+                                                        Qt::KeepAspectRatio/*,
                                                                              Qt::SmoothTransformation*/);
         }
         return QImage();

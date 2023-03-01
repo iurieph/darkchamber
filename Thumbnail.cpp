@@ -26,10 +26,17 @@
 #include "Application.h"
 
 #include <QPainter>
+#include <QFileInfo>
+#include <QGraphicsTextItem>
+#include <QGraphicsPixmapItem>
 
 Thumbnail::Thumbnail(PhotoItem *item)
         : QGraphicsWidget(nullptr)
         , photoItem{item}
+        , m_borderWidth{1}
+        , m_padding{1}
+        , m_exposureInfo{new QGraphicsTextItem(photoItem->imageData()->getExposureInfo(), this)}
+        , m_thumbnailImage{new QGraphicsPixmapItem(QPixmap::fromImage(photoItem->thumbnail()), this)}
 {
         setFlag(QGraphicsItem::ItemIsSelectable);
         setSelected(photoItem->isSelected());
@@ -45,12 +52,16 @@ void Thumbnail::paint(QPainter *painter,
 {
         if (photoItem->thumbnail().isNull())
                 return;
-        painter->fillRect(rect(), Qt::white);
-        
+
+        int yOffset = 0;
         int x = (rect().width() - photoItem->thumbnail().width()) / 2;
-        painter->drawImage(x, 3, photoItem->thumbnail());
+//        painter->drawImage(x, 0, photoItem->thumbnail());
+        yOffset += photoItem->thumbnail().height();
+
+        drawFileName(yOffset, painter);
         
         auto pen = painter->pen();
+        pen.setWidth(m_borderWidth);
         if (isSelected())
                 pen.setColor({0, 0, 255});
         else
@@ -59,10 +70,23 @@ void Thumbnail::paint(QPainter *painter,
         painter->drawRect(rect());
 }
 
+void Thumbnail::drawFileName(int yOffset, QPainter *painter)
+{
+//        painter->drawText(QRectF(0, yOffset, rect().width(), 20/*painter->font().pixelSize()*/),
+//                          Qt::AlignHCenter, QFileInfo(photoItem->path()).fileName());
+}
+
 void Thumbnail::selectItem(bool b)
 {
         if (b != isSelected())
                 setSelected(b);
+}
+
+void Thumbnail::setSize(const QSize &size)
+{
+        QSize paddingSize(2 * (m_borderWidth + m_padding), 2 * (m_borderWidth + m_padding));
+        setMinimumSize(size + paddingSize);
+        setMaximumSize(size + paddingSize - QSize(1, 1));
 }
 
 QVariant Thumbnail::itemChange(QGraphicsItem::GraphicsItemChange change,
@@ -81,4 +105,12 @@ PhotoItem* Thumbnail::getPhotoItem() const
 void Thumbnail::mouseDoubleClickEvent([[maybe_unused]]QGraphicsSceneMouseEvent *event)
 {
         emit photoItem->viewImage(photoItem);
+}
+
+void Thumbnail::resizeEvent(QGraphicsSceneResizeEvent *event)
+{
+        int yOffset = m_borderWidth + m_padding;
+        m_thumbnailImage->setPos(m_borderWidth + m_padding, yOffset);
+        yOffset += m_thumbnailImage->boundingRect().height();
+        m_exposureInfo->setPos(m_borderWidth + m_padding, yOffset);
 }

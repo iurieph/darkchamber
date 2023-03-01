@@ -40,7 +40,7 @@ QImage JpgImageDecoder::thumbnail() const
         DARKCHAMBER_LOG_DEBUG() << path();
         auto size = DarkChamberApplication::getAppInstance()->thumbnailsSize();
         return QImage(path()).scaled(size,
-                                     Qt::KeepAspectRatioByExpanding/*,
+                                     Qt::KeepAspectRatio/*,
                                                           Qt::SmoothTransformation*/);
 }
 

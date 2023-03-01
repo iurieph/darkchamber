@@ -38,7 +38,7 @@ QImage DefaultImageDecoder::thumbnail() const
 
         auto size = DarkChamberApplication::getAppInstance()->thumbnailsSize();
         return QImage(path()).scaled(size,
-                                    Qt::KeepAspectRatioByExpanding/*,
+                                    Qt::KeepAspectRatio/*,
                                                          Qt::SmoothTransformation*/);
 }
 

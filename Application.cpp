@@ -25,7 +25,7 @@
 
 DarkChamberApplication::DarkChamberApplication(int &argc, char **argv, int falgs)
         : QApplication(argc, argv, falgs)
-        , m_thumbnailsSize(150, 150)
+        , m_thumbnailsSize(146, 146)
 {
 }
 
