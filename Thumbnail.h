@@ -45,6 +45,7 @@ protected slots:
         void selectItem(bool b = true);
 
 protected:
+        void updatePositions();
         void paint(QPainter *painter,
                    const QStyleOptionGraphicsItem *option,
                    QWidget *widget = nullptr) override;

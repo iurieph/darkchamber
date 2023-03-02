@@ -29,6 +29,7 @@
 #include <QFileInfo>
 #include <QGraphicsTextItem>
 #include <QGraphicsPixmapItem>
+#include <QGraphicsLinearLayout>
 
 Thumbnail::Thumbnail(PhotoItem *item)
         : QGraphicsWidget(nullptr)
@@ -38,28 +39,30 @@ Thumbnail::Thumbnail(PhotoItem *item)
         , m_exposureInfo{new QGraphicsTextItem(photoItem->imageData()->getExposureInfo(), this)}
         , m_thumbnailImage{new QGraphicsPixmapItem(QPixmap::fromImage(photoItem->thumbnail()), this)}
 {
+        setSize(DarkChamberApplication::getAppInstance()->thumbnailsSize());        
         setFlag(QGraphicsItem::ItemIsSelectable);
         setSelected(photoItem->isSelected());
+        
         QObject::connect(photoItem,
                          &PhotoItem::photoSelected,
                          this,
                          &Thumbnail::selectItem);
+        
+        updatePositions();
+}
+
+void Thumbnail::updatePositions()
+{
+        m_thumbnailImage->setPos((rect().width() - m_thumbnailImage->boundingRect().width()) / 2,
+                                 m_borderWidth + m_padding);
+        m_exposureInfo->setPos(m_borderWidth + m_padding,
+                               m_borderWidth + m_padding + m_thumbnailImage->boundingRect().height() + 2);
 }
 
 void Thumbnail::paint(QPainter *painter,
                       [[maybe_unused]]const QStyleOptionGraphicsItem *option,
                       [[maybe_unused]]QWidget *widget)
 {
-        if (photoItem->thumbnail().isNull())
-                return;
-
-        int yOffset = 0;
-        int x = (rect().width() - photoItem->thumbnail().width()) / 2;
-//        painter->drawImage(x, 0, photoItem->thumbnail());
-        yOffset += photoItem->thumbnail().height();
-
-        drawFileName(yOffset, painter);
-        
         auto pen = painter->pen();
         pen.setWidth(m_borderWidth);
         if (isSelected())
@@ -84,9 +87,23 @@ void Thumbnail::selectItem(bool b)
 
 void Thumbnail::setSize(const QSize &size)
 {
-        QSize paddingSize(2 * (m_borderWidth + m_padding), 2 * (m_borderWidth + m_padding));
-        setMinimumSize(size + paddingSize);
-        setMaximumSize(size + paddingSize - QSize(1, 1));
+        auto currentGeom = geometry();
+        setGeometry(currentGeom.x(),
+                    currentGeom.y(),
+                    size.width() + 2 * (m_borderWidth + m_padding),
+                    size.height() + 2 * (m_borderWidth + m_padding));
+
+        auto exposureFont = m_exposureInfo->font();
+        exposureFont.setPixelSize(12);
+        m_exposureInfo->setFont(exposureFont);
+       
+        auto pm = QPixmap::fromImage(photoItem->thumbnail());
+        if (pm.size() != size) {
+                pm = pm.scaled(rect().width() - 2 * (m_borderWidth + m_padding) + 1,
+                               rect().height() - m_exposureInfo->boundingRect().height() - 3);
+        }
+        m_thumbnailImage->setPixmap(pm);
+        updatePositions();
 }
 
 QVariant Thumbnail::itemChange(QGraphicsItem::GraphicsItemChange change,

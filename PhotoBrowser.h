@@ -40,13 +40,14 @@ public:
 public slots:
         void nextItem();
         void previousItem();
+        void zoomIn();
+        void zoomOut();
 
 protected:
         void createActions();
         void resizeEvent(QResizeEvent *event) override;
         void keyPressEvent(QKeyEvent *event) override;
         void updateFilters();
-        int getColumns() const;
         void contextMenuEvent(QContextMenuEvent *event);
         void deletePermanently();
         void moveToTrash();

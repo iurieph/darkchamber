@@ -112,6 +112,25 @@ void MainWindow::createToolBars()
         auto action = new QAction(QIcon::fromTheme("info"),
                                   tr("Show photo extif info"));
         toolbar->addAction(action);
+
+        // Zoom In/Out actions
+        toolbar->addSeparator();
+        action = new QAction(QIcon::fromTheme("zoom-in"),
+                             tr("Zoom in browser thumbnails"));
+        QObject::connect(action,
+			 &QAction::triggered,
+			 photoBrowser,
+		         &PhotoBrowser::zoomIn);
+        toolbar->addAction(action);
+        action = new QAction(QIcon::fromTheme("zoom-out"),
+                             tr("Zoom out browser thumbnails"));
+        QObject::connect(action,
+			 &QAction::triggered,
+			 photoBrowser,
+		         &PhotoBrowser::zoomOut);
+
+        toolbar->addAction(action);
+        toolbar->addSeparator();
 }
 
 void MainWindow::showImage(PhotoItem *image)

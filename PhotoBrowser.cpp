@@ -48,8 +48,6 @@ PhotoBrowser::PhotoBrowser(PhotoModel *model, QWidget *parent)
         browserModel = new PhotoBrowserModel(scene, model);        
         browserModel->setThumbnailSize(thumbnailSize);
         browserModel->setThumbnailPadding(thumbnailPadding);
-        browserModel->setColumns(getColumns());
-        
         setMinimumSize(thumbnailSize + QSize(thumbnailPadding, thumbnailPadding));
         setAlignment(Qt::AlignLeft | Qt::AlignTop);
         createActions();
@@ -85,7 +83,7 @@ void PhotoBrowser::createActions()
 
 void PhotoBrowser::resizeEvent(QResizeEvent *event)
 {
-        browserModel->setColumns(getColumns());
+        browserModel->updateColumns();
 }
 
 void PhotoBrowser::keyPressEvent(QKeyEvent *event)
@@ -167,15 +165,6 @@ void PhotoBrowser::protectFile()
         //        browserModel->protectSelectedItems();
 }
 
-int PhotoBrowser::getColumns() const
-{
-        auto itemSize = QSize{thumbnailSize.width() + thumbnailPadding / 2,
-                thumbnailSize.height() + thumbnailPadding / 2};
-        if (width() < itemSize.width())
-                return 1;
-        return width() / itemSize.width();
-}
-
 void PhotoBrowser::updateFilters()
 {
         //QVector<std::unique_ptr<PhotoFilters*>> filters;
@@ -191,3 +180,20 @@ void PhotoBrowser::previousItem()
 {
         browserModel->selectPrevious();
 }
+
+void PhotoBrowser::zoomIn()
+{
+        thumbnailSize += {20, 20};
+        if (thumbnailSize.width() > DarkChamberApplication::getAppInstance()->thumbnailsSize().width())
+thumbnailSize = DarkChamberApplication::getAppInstance()->thumbnailsSize();
+browserModel->setThumbnailSize(thumbnailSize);
+}
+
+void PhotoBrowser::zoomOut()
+{
+        thumbnailSize -= {20, 20};
+        if (thumbnailSize.width() < 100)
+                thumbnailSize = {100, 100};
+        browserModel->setThumbnailSize(thumbnailSize);
+}
+

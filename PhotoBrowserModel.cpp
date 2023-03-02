@@ -34,7 +34,7 @@ PhotoBrowserModel::PhotoBrowserModel(QGraphicsScene *parent, PhotoModel *model)
         , modelScene{parent}
         , photoModel{model}
         , m_thumbnailPadding{0}
-        , itemColumns{0}
+        , m_nColumns{0}
 {
         QObject::connect(photoModel,
                          &PhotoModel::itemsAdded,
@@ -55,28 +55,15 @@ void PhotoBrowserModel::setThumbnailSize(const QSize &size)
         m_thumbnailSize = size;
         for (auto &item: modelItems)
                 item.first->setSize(m_thumbnailSize);
-        updatePositions();
+        updateColumns();
 }
 
 void PhotoBrowserModel::setThumbnailPadding(int padding)
 {        
         m_thumbnailPadding = padding;
-        updatePositions();
+        updateColumns();
 }
-
-void PhotoBrowserModel::setColumns(int columns)
-{
-        if (itemColumns != columns) {
-                itemColumns = columns;
-                updatePositions();
-                return;
-        }
-
-        // The QGraphicsScene caches the scene rect.
-        emit modelScene->sceneRectChanged(modelScene->sceneRect());
-}
-        
-
+  
 bool PhotoBrowserModel::selectItemAt(const QPointF &p)
 {
         auto items = modelScene->items(p);
@@ -110,7 +97,11 @@ void PhotoBrowserModel::addItems(const std::vector<PhotoItem*> &items)
                         modelItems.insert(pos, newItem);
                 modelScene->addItem(sceneItem);
         }
-        updatePositions();
+
+        if (modelItems.size() == 1)
+                updateColumns();
+        else
+                updatePositions();
 }
 
 void PhotoBrowserModel::removeItems(const std::vector<PhotoItem*> &items)
@@ -137,33 +128,73 @@ void PhotoBrowserModel::clear()
 //{
 //}
 
+void PhotoBrowserModel::updateColumns()
+{
+        int nColumns = getColumns(columnWidth());
+        DARKCHAMBER_LOG_DEBUG() << "columnWidth(): " << columnWidth();
+        DARKCHAMBER_LOG_DEBUG() << "nColumns" << nColumns;
+        if (m_nColumns != nColumns) {
+                m_nColumns = nColumns;
+                updatePositions();
+                return;
+        }
+        
+        // The QGraphicsScene caches the scene rect.
+        emit modelScene->sceneRectChanged(modelScene->sceneRect());
+}
+
 void PhotoBrowserModel::updatePositions()
 {
-        if (itemColumns < 1)
+        if (m_nColumns < 1)
                 return;
-
-        auto itemSize = QSize{thumbnailSize().width() + thumbnailPadding() / 2,
-                              thumbnailSize().height() + thumbnailPadding() / 2};
+        
+        auto itemSize = QSizeF(columnWidth(), rowHeight());
+        DARKCHAMBER_LOG_DEBUG() << itemSize.width() << "|" <<  itemSize.height();
         int nRows = getRows();
         for (int row = 0; row < nRows; row++) {
-                for (int col = 0; col < itemColumns; col++) {
-                        decltype(modelItems.size()) index = itemColumns * row + col;
+                for (int col = 0; col < m_nColumns; col++) {
+                        decltype(modelItems.size()) index = m_nColumns * row + col;
                         if (index < modelItems.size()) {
-                                auto sceneItem = modelItems[itemColumns * row + col].first;
+                                auto sceneItem = modelItems[m_nColumns * row + col].first;
                                 sceneItem->setPos(col * itemSize.width(), row * itemSize.height());
                         }
                 }
         }
         modelScene->setSceneRect(QRect(0, 0,
-                                       itemColumns * itemSize.width(),
+                                       m_nColumns * itemSize.width(),
                                        nRows * itemSize.height()));
+}
+
+int PhotoBrowserModel::columnWidth() const
+{
+        if (modelItems.empty())
+                return 0;
+        return modelItems.front().first->boundingRect().width() + thumbnailPadding() / 2;
+}
+
+int PhotoBrowserModel::rowHeight() const
+{
+        if (modelItems.empty())
+                return 0;
+        return modelItems.front().first->boundingRect().height() + thumbnailPadding() / 2;
+}
+
+int PhotoBrowserModel::getColumns(int width) const
+{
+        if (width == 0)
+                return 0;
+        
+        auto viewWidth = modelScene->views().first()->width();
+        if (viewWidth < width)
+                return 1;
+        return viewWidth / width;
 }
 
 int PhotoBrowserModel::getRows() const
 {
-        if (itemColumns > 0)
-                return modelItems.size() / itemColumns
-                        + (modelItems.size() % itemColumns ? 1 : 0);
+        if (m_nColumns > 0)
+                return modelItems.size() / m_nColumns
+                        + (modelItems.size() % m_nColumns ? 1 : 0);
         return 0;
 }
 
@@ -206,12 +237,12 @@ void PhotoBrowserModel::selectPrevious()
 
 void PhotoBrowserModel::selectUp()
 {
-        selectNext(false, itemColumns);
+        selectNext(false, m_nColumns);
 }
 
 void PhotoBrowserModel::selectDown()
 {
-        selectNext(true, itemColumns);
+        selectNext(true, m_nColumns);
 }
 
 #include <QDebug>

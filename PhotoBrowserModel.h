@@ -48,7 +48,6 @@ public:
         explicit PhotoBrowserModel(QGraphicsScene *parent, PhotoModel *model);
         void setThumbnailSize(const QSize &size);
         void setThumbnailPadding(int padding);
-        void setColumns(int columns);
         void selectNext(bool direction = true, int n = 1);
         void selectPrevious();
         void selectUp();
@@ -63,12 +62,16 @@ public slots:
         void addItems(const std::vector<PhotoItem*> &items);
         void removeItems(const std::vector<PhotoItem*> &items);
         void clear();
+        void updateColumns();
         void viewImage();
 //        void setFilters(const QList<PhotoFilter*> &filters);
 
 protected:
         void updatePositions();
+        int columnWidth() const;
+        int rowHeight() const;
         int getRows() const;
+        int getColumns(int width) const;
         int indexOf(const QGraphicsItem *item) const;
         ModelItems::iterator findBySceneItem(const QGraphicsItem *item);
         ModelItems::iterator findByPhotoItem(const PhotoItem *item);
@@ -80,7 +83,7 @@ private:
         PhotoModel *photoModel;
         QSize m_thumbnailSize;
         int m_thumbnailPadding;
-        int itemColumns;
+        int m_nColumns;
         //        std::vector<PhotoFilter> photoFilters;
         ModelItems modelItems;
 };
