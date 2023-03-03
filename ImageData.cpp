@@ -106,7 +106,7 @@ QString ImageData::getExposureInfo() const
                 shutterStr = QString::number( 1.0 / rawInfo->getShutter(), 'f', 0);
         }
 
-        return QString("ISO %1  f/%2  1/%3").arg(isoStr).arg(apertureStr).arg(shutterStr);
+        return QString("ISO 32000  f/32.0  1/30000");//.arg(isoStr).arg(apertureStr).arg(shutterStr);
 }
 
 const std::filesystem::file_time_type& ImageData::takenDate() const

@@ -55,6 +55,8 @@ void Thumbnail::updatePositions()
 {
         m_thumbnailImage->setPos((rect().width() - m_thumbnailImage->boundingRect().width()) / 2,
                                  m_borderWidth + m_padding);
+        if (m_exposureInfo->boundingRect().width() > rect().width() - 2 * (m_borderWidth + m_padding))
+                m_exposureInfo->setScale(static_cast<double>(rect().width() - 2 * (m_borderWidth + m_padding)) / m_exposureInfo->boundingRect().width());
         m_exposureInfo->setPos(m_borderWidth + m_padding,
                                m_borderWidth + m_padding + m_thumbnailImage->boundingRect().height() + 2);
 }
