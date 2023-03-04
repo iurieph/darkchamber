@@ -43,11 +43,10 @@ PhotoBrowser::PhotoBrowser(PhotoModel *model, QWidget *parent)
         , moveAct{nullptr}
         , protectAct{nullptr}
 {
-        auto scene = new QGraphicsScene(this);
-        setScene(scene);
-        browserModel = new PhotoBrowserModel(scene, model);        
+        browserModel = new PhotoBrowserModel(model);
         browserModel->setThumbnailSize(thumbnailSize);
         browserModel->setThumbnailPadding(thumbnailPadding);
+        setScene(browserModel);
         setMinimumSize(thumbnailSize + QSize(thumbnailPadding, thumbnailPadding));
         setAlignment(Qt::AlignLeft | Qt::AlignTop);
         createActions();
@@ -88,32 +87,39 @@ void PhotoBrowser::resizeEvent(QResizeEvent *event)
 
 void PhotoBrowser::keyPressEvent(QKeyEvent *event)
 {
+        if (event->modifiers() == Qt::ControlModifier)
+                browserModel->setMultiSelect();
+        else
+                browserModel->setMultiSelect(false);
+
         switch (event->key()) {
         case Qt::Key_Delete:
                 browserModel->rejectSelectedItems();
                 break;
         case Qt::Key_Right:
-                qDebug() << "Qt::Key_Right";
                 browserModel->selectNext();
                 break;
         case Qt::Key_Left:
                 browserModel->selectPrevious();
                 break;
-	case Qt::Key_Up:
+        case Qt::Key_Up:
                 browserModel->selectUp();
                 break;
-	case Qt::Key_Down:
+        case Qt::Key_Down:
                 browserModel->selectDown();
                 break;
         case Qt::Key_Return:
                 browserModel->viewImage();
+                break;
+        case Qt::Key_A:
+                browserModel->selectAll();
                 break;
         }
 }
 
 void PhotoBrowser::contextMenuEvent(QContextMenuEvent *event)
 {
-        auto res = browserModel->selectItemAt(mapToScene({event->x(), event->y()}));
+        auto res = browserModel->selectThumbnailAt(mapToScene({event->x(), event->y()}));
         if (res) {
                 QMenu menu(this);
                 menu.addAction(deleteAct);

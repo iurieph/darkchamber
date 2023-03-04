@@ -69,6 +69,7 @@ void PhotoItem::setRejected(bool b)
 {
         if (b != photoStateFile.isRejected()) {
                 photoStateFile.setRejected(b);
+                setSelected(false);
                 emit photoRejected(b);
         }
 }

@@ -59,7 +59,7 @@ MainWindow::MainWindow()
 	auto locationsView = new LocationsView;
 	locationsView->setModel(locationsModel);
 	addDockWidget(Qt::DockWidgetArea::LeftDockWidgetArea, locationsView);
-	addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, new EffectsWidget);
+	//addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, new EffectsWidget);
 
         pathLoader->moveToThread(pathLoaderThread);
         QObject::connect(locationsView,
@@ -81,7 +81,7 @@ MainWindow::MainWindow()
 			 &PhotoModel::viewImage,
 			 this,
 		         &MainWindow::showImage);
-	photoBrowser = new PhotoBrowser(photoModel, this);
+photoBrowser = new PhotoBrowser(photoModel, this);
         widgetSplitter->addWidget(photoBrowser);
         setCentralWidget(widgetSplitter);
         resize(1300, 800);

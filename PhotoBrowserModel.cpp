@@ -26,28 +26,29 @@
 #include "PhotoItem.h"
 #include "Thumbnail.h"
 
-#include <QGraphicsScene>
 #include <QGraphicsView>
+#include <QGraphicsSceneMouseEvent>
 
-PhotoBrowserModel::PhotoBrowserModel(QGraphicsScene *parent, PhotoModel *model)
-        : QObject{parent}
-        , modelScene{parent}
-        , photoModel{model}
+PhotoBrowserModel::PhotoBrowserModel(PhotoModel *model)
+        :photoModel{model}
+        , m_currentIndex{0}
+        , m_beginSelectionIndex{0}
+        , m_multiSelect{0}
         , m_thumbnailPadding{0}
         , m_nColumns{0}
 {
         QObject::connect(photoModel,
                          &PhotoModel::itemsAdded,
                          this,
-                         &PhotoBrowserModel::addItems);
+                         &PhotoBrowserModel::addPhotoItems);
         QObject::connect(photoModel,
                          &PhotoModel::itemsRemoved,
                          this,
-                         &PhotoBrowserModel::removeItems);
+                         &PhotoBrowserModel::removePhotoItems);
         QObject::connect(photoModel,
                          &PhotoModel::modelCleared,
                          this,
-                         &PhotoBrowserModel::clear);
+                         &PhotoBrowserModel::clearModel);
 }
 
 void PhotoBrowserModel::setThumbnailSize(const QSize &size)
@@ -64,11 +65,11 @@ void PhotoBrowserModel::setThumbnailPadding(int padding)
         updateColumns();
 }
   
-bool PhotoBrowserModel::selectItemAt(const QPointF &p)
+bool PhotoBrowserModel::selectThumbnailAt(const QPointF &p)
 {
-        auto items = modelScene->items(p);
-        if (!items.isEmpty()) {
-                auto thumb = dynamic_cast<Thumbnail*>(items.first());
+        auto sceneItems = items(p);
+        for (auto& sceneItem : sceneItems) {
+                auto thumb = dynamic_cast<Thumbnail*>(sceneItem);
                 if (thumb) {
                         thumb->setSelected(true);
                         return true;
@@ -77,13 +78,17 @@ bool PhotoBrowserModel::selectItemAt(const QPointF &p)
         return false;
 }
 
-void PhotoBrowserModel::addItems(const std::vector<PhotoItem*> &items)
+void PhotoBrowserModel::addPhotoItems(const std::vector<PhotoItem*> &photoItems)
 {
-        auto rejectedFilter = [](const PhotoItem *item) -> bool { return !item->isRejected(); };
-        for (const auto& item: items | std::views::filter(rejectedFilter)) {
-                auto sceneItem = new Thumbnail(item);
-                sceneItem->setSize(m_thumbnailSize);
-                auto newItem = std::make_pair(sceneItem, item);
+        auto rejectedFilter = [](const PhotoItem *photoItem) -> bool {
+                return !photoItem->isRejected();
+        };
+
+        auto wasModelEmpty = modelItems.empty();
+        for (const auto& photoItem: photoItems | std::views::filter(rejectedFilter)) {
+                auto thumbnail = new Thumbnail(photoItem);
+                thumbnail->setSize(m_thumbnailSize);
+                auto newItem = std::make_pair(thumbnail, photoItem);
                 auto pos = std::lower_bound(modelItems.begin(),
                                             modelItems.end(),
                                             newItem,
@@ -95,22 +100,22 @@ void PhotoBrowserModel::addItems(const std::vector<PhotoItem*> &items)
                         modelItems.push_back(newItem);
                 else 
                         modelItems.insert(pos, newItem);
-                modelScene->addItem(sceneItem);
+                addItem(thumbnail);
         }
 
-        if (modelItems.size() == 1)
-                updateColumns();
+        if (wasModelEmpty)
+                updateColumns();  
         else
                 updatePositions();
 }
 
-void PhotoBrowserModel::removeItems(const std::vector<PhotoItem*> &items)
+void PhotoBrowserModel::removePhotoItems(const std::vector<PhotoItem*> &photoItems)
 {
         DARKCHAMBER_LOG_DEBUG();
-        for (const auto& item: items) {
-                auto it = findByPhotoItem(item);
+        for (const auto& photoItem: photoItems) {
+                auto it = findByPhotoItem(photoItem);
                 if (it != modelItems.end()) {
-                        modelScene->removeItem((*it).first);
+                        removeItem((*it).first);
                         delete (*it).first;
                         modelItems.erase(it);
                 }
@@ -118,9 +123,9 @@ void PhotoBrowserModel::removeItems(const std::vector<PhotoItem*> &items)
         updatePositions();
 }
 
-void PhotoBrowserModel::clear()
+void PhotoBrowserModel::clearModel()
 {
-        modelScene->clear();
+        clear();
         modelItems.clear();
 }
 
@@ -131,8 +136,6 @@ void PhotoBrowserModel::clear()
 void PhotoBrowserModel::updateColumns()
 {
         int nColumns = getColumns(columnWidth());
-        DARKCHAMBER_LOG_DEBUG() << "columnWidth(): " << columnWidth();
-        DARKCHAMBER_LOG_DEBUG() << "nColumns" << nColumns;
         if (m_nColumns != nColumns) {
                 m_nColumns = nColumns;
                 updatePositions();
@@ -140,7 +143,7 @@ void PhotoBrowserModel::updateColumns()
         }
         
         // The QGraphicsScene caches the scene rect.
-        emit modelScene->sceneRectChanged(modelScene->sceneRect());
+        emit sceneRectChanged(sceneRect());
 }
 
 void PhotoBrowserModel::updatePositions()
@@ -149,7 +152,6 @@ void PhotoBrowserModel::updatePositions()
                 return;
         
         auto itemSize = QSizeF(columnWidth(), rowHeight());
-        DARKCHAMBER_LOG_DEBUG() << itemSize.width() << "|" <<  itemSize.height();
         int nRows = getRows();
         for (int row = 0; row < nRows; row++) {
                 for (int col = 0; col < m_nColumns; col++) {
@@ -160,9 +162,9 @@ void PhotoBrowserModel::updatePositions()
                         }
                 }
         }
-        modelScene->setSceneRect(QRect(0, 0,
-                                       m_nColumns * itemSize.width(),
-                                       nRows * itemSize.height()));
+        setSceneRect(QRect(0, 0,
+                           m_nColumns * itemSize.width(),
+                           nRows * itemSize.height()));
 }
 
 int PhotoBrowserModel::columnWidth() const
@@ -184,7 +186,7 @@ int PhotoBrowserModel::getColumns(int width) const
         if (width == 0)
                 return 0;
         
-        auto viewWidth = modelScene->views().first()->width();
+        auto viewWidth = views().first()->width();
         if (viewWidth < width)
                 return 1;
         return viewWidth / width;
@@ -198,54 +200,77 @@ int PhotoBrowserModel::getRows() const
         return 0;
 }
 
-void PhotoBrowserModel::selectNext(bool direction, int n)
+/*void PhotoBrowserModel::selectNext(int n)
 {
         if (modelItems.empty())
                 return;
+
+        if (!isMultiSelect())
+                clearSelection();
+
+        int previousIndex = m_currentIndex;
+        m_currentIndex += n;       
+        if (m_currentIndex < 0)
+                m_currentIndex = 0;
+        else if (m_currentIndex > static_cast<int>(modelItems.size()))
+                m_currentIndex = modelItems.size() - 1;
+
+        if ( previousIndex < 0 )
+                previousIndex = 0;
+
+        int rangeOfIndexes = std::abs(m_currentIndex - previousIndex);
+        int i = (previousIndex <= m_currentIndex) ? previousIndex : m_currentIndex;
+        for (; i <= rangeOfIndexes; i++)
+                modelItems[i].second->setSelected();
         
-        auto sceneSelectedItems = modelScene->selectedItems();
-        if (sceneSelectedItems.isEmpty()) {
-                auto item = direction ? modelItems.front() : modelItems.back();
-                item.second->setSelected(true);
-                return;
-        }
+        for (auto &view : views())
+                view->ensureVisible(modelItems[m_currentIndex].first);
+                }*/
 
-        auto sceneSelectedItem = direction ? sceneSelectedItems.first() : sceneSelectedItems.last();
-        if (modelItems.size() < 2)
-                return;
+void PhotoBrowserModel::selectNext(int n)
+{
+    if (modelItems.empty())
+        return;
 
-        auto i = indexOf(sceneSelectedItem);
-        if (i > -1) {
-                ModelItem nextItem;
-                if (direction)
-                        nextItem = (static_cast<decltype(modelItems.size())>(i + n)
-                                    < modelItems.size()) ? modelItems[i + n] : modelItems.back();
-                else
-                        nextItem = static_cast<decltype(modelItems.size())>(i - n > -1)
-                                ? modelItems[i - n] : modelItems.front();
-                static_cast<Thumbnail*>(sceneSelectedItem)->getPhotoItem()->setSelected(false);
-                nextItem.second->setSelected(true);
-                for (auto &view : modelScene->views())
-                        view->ensureVisible(nextItem.first);
-        }        
+    if (!isMultiSelect())
+        clearSelection();
+
+    m_currentIndex = qBound(0, m_currentIndex + n, static_cast<int>(modelItems.size() - 1));
+
+    int start = qMin(m_beginSelectionIndex, m_currentIndex);
+    int end = qMax(m_beginSelectionIndex, m_currentIndex);
+
+    for (int i = start; i <= end; i++) {
+            if (i >= 0 && i < modelItems.size())
+                    modelItems[i].second->setSelected(true);
+    }
+
+    for (auto &view : views()) {
+        if (m_currentIndex >= 0 && m_currentIndex < modelItems.size())
+            view->ensureVisible(modelItems[m_currentIndex].first);
+    }
 }
 
 void PhotoBrowserModel::selectPrevious()
 {
-        selectNext(false, 1);
+        selectNext(-1);
 }
 
 void PhotoBrowserModel::selectUp()
 {
-        selectNext(false, m_nColumns);
+        selectNext(-m_nColumns);
 }
 
 void PhotoBrowserModel::selectDown()
 {
-        selectNext(true, m_nColumns);
+        selectNext(m_nColumns);
 }
 
-#include <QDebug>
+void PhotoBrowserModel::selectAll()
+{
+        for (auto &item : modelItems)
+                item.second->setSelected();
+}
 
 void PhotoBrowserModel::rejectSelectedItems()
 {
@@ -253,7 +278,7 @@ void PhotoBrowserModel::rejectSelectedItems()
                 return;
 
         QGraphicsItem *sceneNextItem = nullptr;
-        auto sceneSelectedItems = modelScene->selectedItems();
+        auto sceneSelectedItems = selectedItems();
         if (!sceneSelectedItems.isEmpty()) {
                 auto sceneLastDeleteItem = sceneSelectedItems.last();
                 auto i = indexOf(sceneLastDeleteItem);
@@ -265,7 +290,7 @@ void PhotoBrowserModel::rejectSelectedItems()
         }
 
         for (auto &sceneItem: sceneSelectedItems) {
-                modelScene->removeItem(sceneItem);
+                removeItem(sceneItem);
                 auto it = findBySceneItem(sceneItem);
                 if (it != modelItems.end()) {
                         (*it).second->setRejected();
@@ -273,16 +298,17 @@ void PhotoBrowserModel::rejectSelectedItems()
                 }
                 delete sceneItem;
         }
+        
         updatePositions();
         if (sceneNextItem) {
-                for (auto &view : modelScene->views())
+                for (auto &view : views())
                         view->ensureVisible(sceneNextItem);
         }
 }
 
 void PhotoBrowserModel::deleteSelectedItems(bool trash)
 {
-        auto sceneSelectedItems = modelScene->selectedItems();
+        auto sceneSelectedItems = selectedItems();
         if (sceneSelectedItems.empty())
                 return;
 
@@ -329,7 +355,7 @@ int PhotoBrowserModel::indexOf(const QGraphicsItem *item) const
 
 void PhotoBrowserModel::viewImage()
 {
-        auto sceneSelectedItems = modelScene->selectedItems();
+        auto sceneSelectedItems = selectedItems();
         if (!sceneSelectedItems.isEmpty())
                 emit photoModel->viewImage(static_cast<Thumbnail*>(sceneSelectedItems.first())->getPhotoItem());
 }
@@ -343,3 +369,24 @@ int PhotoBrowserModel::thumbnailPadding() const
 {
         return m_thumbnailPadding;
 }
+
+void PhotoBrowserModel::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+        if (event->button() != Qt::LeftButton) {
+                event->accept();
+                return;
+        }
+        QGraphicsScene::mousePressEvent(event);
+}
+
+void PhotoBrowserModel::setMultiSelect(bool b)
+{
+        m_beginSelectionIndex = m_currentIndex;
+        m_multiSelect = b;
+}
+
+bool PhotoBrowserModel::isMultiSelect() const
+{
+        return m_multiSelect;
+}
+
