@@ -35,7 +35,7 @@ Thumbnail::Thumbnail(PhotoItem *item)
         : QGraphicsWidget(nullptr)
         , photoItem{item}
         , m_borderWidth{1}
-        , m_padding{1}
+        , m_padding{2}
         , m_exposureInfo{new QGraphicsTextItem(photoItem->imageData()->getExposureInfo(), this)}
         , m_thumbnailImage{new QGraphicsPixmapItem(QPixmap::fromImage(photoItem->thumbnail()), this)}
 {
@@ -67,10 +67,14 @@ void Thumbnail::paint(QPainter *painter,
 {
         auto pen = painter->pen();
         pen.setWidth(m_borderWidth);
-        if (isSelected())
+        if (isSelected()) {
                 pen.setColor({0, 0, 255});
-        else
+                painter->fillRect(rect(), {200, 200, 200});
+                m_thumbnailImage->setOpacity(0.8);
+        } else {
+                m_thumbnailImage->setOpacity(1.0);
                 pen.setColor(Qt::gray);
+        }
         painter->setPen(pen);
         painter->drawRect(rect());
 }

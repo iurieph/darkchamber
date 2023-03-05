@@ -40,6 +40,7 @@
 #include <QTimer>
 #include <QAction>
 #include <QToolBar>
+#include <QStatusBar>
 
 MainWindow::MainWindow()
         : QMainWindow()
@@ -69,6 +70,10 @@ MainWindow::MainWindow()
         pathLoaderThread->start();
         
         photoModel = new PhotoModel(this);
+        QObject::connect(photoModel,
+                         &PhotoModel::addedPhotos,
+                         this,
+                         &MainWindow::updateStatusBar);
         QObject::connect(pathLoader,
                          &PathLoader::pathChanged,
                          photoModel,
@@ -81,17 +86,20 @@ MainWindow::MainWindow()
 			 &PhotoModel::viewImage,
 			 this,
 		         &MainWindow::showImage);
-photoBrowser = new PhotoBrowser(photoModel, this);
+        photoBrowser = new PhotoBrowser(photoModel, this);
         widgetSplitter->addWidget(photoBrowser);
         setCentralWidget(widgetSplitter);
         resize(1300, 800);
 
-        /*QTimer *timer = new QTimer(this);
+        QTimer *timer = new QTimer(this);
         static int n;
         QObject::connect(timer, &QTimer::timeout, [](){
-                DARKCHAMBER_LOG_DEBUG() << "GUI THREAD" <<  n++;
+                DarkChamberApplication::guiSemaphore().release();
+                //                DARKCHAMBER_LOG_DEBUG() << "GUI THREAD" <<  n++;
         });
-        timer->start(50);*/
+        timer->start(1);
+
+        setStatusBar(new QStatusBar(this));
         createToolBars();
 }
 
@@ -162,4 +170,9 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
         default:
                 break;
         }
+}
+
+void MainWindow::updateStatusBar(int n)
+{
+        statusBar()->showMessage(QString("Loaded %1 photos").arg(n));
 }

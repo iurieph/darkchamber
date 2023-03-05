@@ -52,6 +52,7 @@ signals:
         void itemsRemoved(const std::vector<PhotoItem*> &items);
         void modelCleared();
         void viewImage(PhotoItem *image);
+        void addedPhotos(int n);
         
 private:
         QFileSystemModel *fileSystemModel;

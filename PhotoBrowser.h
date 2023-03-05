@@ -47,6 +47,7 @@ protected:
         void createActions();
         void resizeEvent(QResizeEvent *event) override;
         void keyPressEvent(QKeyEvent *event) override;
+        void keyReleaseEvent(QKeyEvent *event) override;
         void updateFilters();
         void contextMenuEvent(QContextMenuEvent *event);
         void deletePermanently();

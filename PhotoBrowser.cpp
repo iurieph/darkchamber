@@ -36,7 +36,7 @@
 PhotoBrowser::PhotoBrowser(PhotoModel *model, QWidget *parent)
         : QGraphicsView(parent)
         , thumbnailSize{DarkChamberApplication::getAppInstance()->thumbnailsSize()}
-        , thumbnailPadding{40}
+        , thumbnailPadding{4}
         , deleteAct{nullptr}
         , trashAct{nullptr}
         , copyAct{nullptr}
@@ -89,8 +89,6 @@ void PhotoBrowser::keyPressEvent(QKeyEvent *event)
 {
         if (event->modifiers() == Qt::ControlModifier)
                 browserModel->setMultiSelect();
-        else
-                browserModel->setMultiSelect(false);
 
         switch (event->key()) {
         case Qt::Key_Delete:
@@ -116,6 +114,13 @@ void PhotoBrowser::keyPressEvent(QKeyEvent *event)
                 break;
         }
 }
+
+void PhotoBrowser::keyReleaseEvent(QKeyEvent *event)
+{
+        if (event->key() == Qt::Key_Control)
+                browserModel->setMultiSelect(false);
+}
+
 
 void PhotoBrowser::contextMenuEvent(QContextMenuEvent *event)
 {
@@ -197,9 +202,9 @@ browserModel->setThumbnailSize(thumbnailSize);
 
 void PhotoBrowser::zoomOut()
 {
-        thumbnailSize -= {20, 20};
-        if (thumbnailSize.width() < 100)
-                thumbnailSize = {100, 100};
+        thumbnailSize -= {24, 24};
+        if (thumbnailSize.width() < 24)
+                thumbnailSize = {24, 24};
         browserModel->setThumbnailSize(thumbnailSize);
 }
 

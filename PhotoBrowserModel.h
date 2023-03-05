@@ -76,6 +76,7 @@ protected:
         int getRows() const;
         int getColumns(int width) const;
         int indexOf(const QGraphicsItem *item) const;
+        int indexAt(const QPointF &pos) const;
         ModelItems::iterator findBySceneItem(const QGraphicsItem *item);
         ModelItems::iterator findByPhotoItem(const PhotoItem *item);
         const QSize& thumbnailSize() const;

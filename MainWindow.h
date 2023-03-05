@@ -50,6 +50,7 @@ protected:
 protected slots:
         void showImage(PhotoItem *iamge);
         void showNextImage(bool direction);
+        void updateStatusBar(int n);
 
 private:
         PhotoModel *photoModel;

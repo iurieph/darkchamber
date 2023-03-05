@@ -39,7 +39,8 @@ void PhotoModel::addPhoto(PhotoItem *item)
                          this,
                          &PhotoModel::viewImage);
         emit itemsAdded({item});
-        DarkChamberApplication::guiSemaphore().release();
+        emit addedPhotos(photoItemList.size());
+        //        DarkChamberApplication::guiSemaphore().release();
 }
 
 void PhotoModel::deletePermanelty(const std::vector<PhotoItem*> &items, bool trash)
