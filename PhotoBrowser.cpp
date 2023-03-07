@@ -43,9 +43,10 @@ PhotoBrowser::PhotoBrowser(PhotoModel *model, QWidget *parent)
         , moveAct{nullptr}
         , protectAct{nullptr}
 {
+        setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         browserModel = new PhotoBrowserModel(model);
         browserModel->setThumbnailSize(thumbnailSize);
-        browserModel->setThumbnailPadding(thumbnailPadding);
+        browserModel->setThumbnailPadding(/*thumbnailPadding*/0);
         setScene(browserModel);
         setMinimumSize(thumbnailSize + QSize(thumbnailPadding, thumbnailPadding));
         setAlignment(Qt::AlignLeft | Qt::AlignTop);

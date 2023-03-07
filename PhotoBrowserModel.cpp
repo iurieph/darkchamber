@@ -30,11 +30,11 @@
 #include <QGraphicsSceneMouseEvent>
 
 PhotoBrowserModel::PhotoBrowserModel(PhotoModel *model)
-        :photoModel{model}
+        : photoModel{model}
         , m_beginSelectionIndex{0}
         , m_currentIndex{0}
         , m_multiSelect{false}
-        , m_thumbnailPadding{0}
+        , m_thumbnailPadding{0.0}
         , m_nColumns{0}
 {
         QObject::connect(photoModel,
@@ -140,25 +140,52 @@ void PhotoBrowserModel::clearModel()
 
 void PhotoBrowserModel::updateColumns()
 {
-        int nColumns = getColumns(columnWidth());
+        /*int nColumns = getColumns(columnWidth());
         if (m_nColumns != nColumns) {
                 m_nColumns = nColumns;
                 updatePositions();
                 return;
-        }
+                }*/
+
+//        views().first()->width();
+/*        if (views().empty())
+                return;
         
-        // The QGraphicsScene caches the scene rect.
+        auto viewSize = views().first()->size();
+        setSceneRect(QRectF(0, 0, viewSize.width(), viewSize.height()));
+        
+        // The QGraphicsScene caches the scene rect.*/
+        updatePositions();
         emit sceneRectChanged(sceneRect());
 }
 
 void PhotoBrowserModel::updatePositions()
 {
-        if (m_nColumns < 1)
+        if (views().empty())
                 return;
+//        if (m_nColumns < 1)
+//                return;
+
+        double xOffset = 0.0;
+        double yOffset = 0.0;
+        double rowHeight = 0.0;
+        double sceneWidth = views().first()->rect().width();
+        double sceneHeight = 0.0;
+        for (auto &item : modelItems) {
+                rowHeight = std::max(item.first->height() + m_thumbnailPadding, rowHeight);
+                if (xOffset + item.first->width() + m_thumbnailPadding > sceneWidth) {
+                        xOffset = 0.0;
+                        yOffset += rowHeight;
+                        rowHeight = 0.0;
+                }
+                item.first->setPos(xOffset, yOffset);
+                xOffset += item.first->width() + m_thumbnailPadding;
+                sceneHeight = yOffset + item.first->height();
+        }
         
-        auto itemSize = QSizeF(columnWidth(), rowHeight());
-        int nRows = getRows();
-        for (int row = 0; row < nRows; row++) {
+//        auto itemSize = QSizeF(columnWidth(), rowHeight());
+//        int nRows = getRows();
+        /*for (int row = 0; row < nRows; row++) {
                 for (int col = 0; col < m_nColumns; col++) {
                         decltype(modelItems.size()) index = m_nColumns * row + col;
                         if (index < modelItems.size()) {
@@ -166,10 +193,8 @@ void PhotoBrowserModel::updatePositions()
                                 sceneItem->setPos(col * itemSize.width(), row * itemSize.height());
                         }
                 }
-        }
-        setSceneRect(QRect(0, 0,
-                           m_nColumns * itemSize.width(),
-                           nRows * itemSize.height()));
+                }*/
+        setSceneRect(QRect(0, 0, sceneWidth, sceneHeight));
 }
 
 int PhotoBrowserModel::columnWidth() const

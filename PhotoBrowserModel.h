@@ -90,7 +90,7 @@ private:
         int m_currentIndex;
         bool m_multiSelect;
         QSize m_thumbnailSize;
-        int m_thumbnailPadding;
+        double m_thumbnailPadding;
         int m_nColumns;
         //        std::vector<PhotoFilter> photoFilters;
         ModelItems modelItems;

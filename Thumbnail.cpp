@@ -91,13 +91,13 @@ void Thumbnail::selectItem(bool b)
                 setSelected(b);
 }
 
-void Thumbnail::setSize(const QSize &size)
+void Thumbnail::setSize(const QSizeF &size)
 {
-        auto currentGeom = geometry();
-        setGeometry(currentGeom.x(),
-                    currentGeom.y(),
-                    size.width() + 2 * (m_borderWidth + m_padding),
-                    size.height() + 2 * (m_borderWidth + m_padding));
+        auto currentGeometry = geometry();
+        setGeometry(currentGeometry.x(),
+                    currentGeometry.y(),
+                    size.width() + 2.0 * (m_borderWidth + m_padding),
+                    size.height() + 2.0 * (m_borderWidth + m_padding));
 
         auto exposureFont = m_exposureInfo->font();
         exposureFont.setPixelSize(12);
@@ -105,11 +105,36 @@ void Thumbnail::setSize(const QSize &size)
        
         auto pm = QPixmap::fromImage(photoItem->thumbnail());
         if (pm.size() != size) {
-                pm = pm.scaled(rect().width() - 2 * (m_borderWidth + m_padding) + 1,
-                               rect().height() - m_exposureInfo->boundingRect().height() - 3);
+                pm = pm.scaled(rect().width() - 2.0 * (m_borderWidth + m_padding) + 1.0,
+                               rect().height() - m_exposureInfo->boundingRect().height() - 3.0);
         }
         m_thumbnailImage->setPixmap(pm);
         updatePositions();
+}
+
+QSizeF Thumbnail::size() const
+{
+        return rect().size();
+}
+
+void Thumbnail::setWidth(const double w)
+{
+        setSize({w, size().height()});
+}
+
+double Thumbnail::width() const
+{
+        return rect().width();
+}
+
+void Thumbnail::setHeight(double h)
+{
+        setSize({size().width(), h});
+}
+
+double Thumbnail::height() const
+{
+        return rect().height();
 }
 
 QVariant Thumbnail::itemChange(QGraphicsItem::GraphicsItemChange change,

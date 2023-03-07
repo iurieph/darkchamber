@@ -39,7 +39,12 @@ class Thumbnail : public QGraphicsWidget
 public:
         explicit Thumbnail(PhotoItem *item);
         PhotoItem* getPhotoItem() const;
-        void setSize(const QSize &size);
+        void setSize(const QSizeF &size);
+        QSizeF size() const;
+        void setWidth(double w);
+        double width() const;
+        void setHeight(double h);
+        double height() const;
 
 protected slots:
         void selectItem(bool b = true);
