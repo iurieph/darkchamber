@@ -33,7 +33,9 @@
 
 PhotoViewer::PhotoViewer(QWidget *parent)
         : QGraphicsView(parent)
-        , zoomFactor{1.05}
+        , currentImage{nullptr}
+        , zoomRange{1, 1600}
+        , procentageOfZoom{100}
 {
         setMinimumSize(150, 150);
         setScene(new QGraphicsScene(rect()));
@@ -47,12 +49,50 @@ void PhotoViewer::setImage(PhotoItem *image)
         scene()->clear();
         QPixmap pm;
         pm.convertFromImage(image->image());
-        auto item = scene()->addPixmap(pm);
-        item->setPos(0, 0);
+        currentImage = scene()->addPixmap(pm);
         scene()->setSceneRect(QRect({0, 0}, pm.size()));
+        zoomFit();
+}
+
+void PhotoViewer::zoomIn()
+{
+        procentageOfZoom = std::clamp(2 * procentageOfZoom, zoomRange.first, zoomRange.second);
+        zoom(procentageOfZoom);
+}
+
+void PhotoViewer::zoomOut()
+{
+        procentageOfZoom = std::clamp(procentageOfZoom / 2, zoomRange.first, zoomRange.second);
+        zoom(procentageOfZoom);
+}
+
+void PhotoViewer::zoomOneToOne()
+{
+        procentageOfZoom = 100;
+        zoom(procentageOfZoom);
+}
+
+void PhotoViewer::zoomFit()
+{
         resetTransform();
-        fitInView(item, Qt::KeepAspectRatio);
+        fitInView(currentImage, Qt::KeepAspectRatio);
         setDragMode(QGraphicsView::NoDrag);
+        procentageOfZoom = 100;
+        currentImage->boundingRect().height() / height();
+}
+
+void PhotoViewer::zoom(int procentage)
+{
+        if (!currentImage)
+                return;
+        
+        procentageOfZoom = std::clamp(procentage, zoomRange.first, zoomRange.second);
+        auto factor = static_cast<double>(procentageOfZoom) / 100.0;
+        auto zoomFactor = factor * (currentImage->boundingRect().height() / height());
+        resetTransform();
+        fitInView(currentImage, Qt::KeepAspectRatio);
+        scale(zoomFactor, zoomFactor);
+        updateHandDragMode();
 }
 
 void PhotoViewer::resizeEvent(QResizeEvent *event)
@@ -68,11 +108,9 @@ void PhotoViewer::resizeEvent(QResizeEvent *event)
 void PhotoViewer::wheelEvent(QWheelEvent *event)
 {
         if (event->angleDelta().y() > 0) {
-                scale(zoomFactor, zoomFactor);
-                updateHandDragMode();
+                zoomIn();
         } else if (event->angleDelta().y() < 0) {
-                scale(1.0 / zoomFactor, 1.0 / zoomFactor);
-                updateHandDragMode();
+                zoomIn();
         } else {
                 QGraphicsView::wheelEvent(event);
         }

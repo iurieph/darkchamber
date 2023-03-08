@@ -25,6 +25,7 @@
 
 class ImageCropper;
 class PhotoItem;
+class QGraphicsPixmapItem;
 
 class PhotoViewer: public QGraphicsView
 {
@@ -32,6 +33,12 @@ class PhotoViewer: public QGraphicsView
  public:
         explicit PhotoViewer(QWidget *parent);
         void setImage(PhotoItem *image);
+
+public slots:
+        void zoomIn();
+        void zoomOut();
+        void zoomOneToOne();
+        void zoomFit();
 
 signals:
         void nextImage(bool direction = true);
@@ -41,11 +48,12 @@ signals:
         void wheelEvent(QWheelEvent *event) override;
         void updateHandDragMode();
 
+protected slots:
+        void zoom(int procentage);
+
 private:
-        QImage sourceImage;
-        QImage renderedImage;
-        ImageCropper *imageCropper;
-        double zoomFactor;
-        int zoomSteps;
+        QGraphicsPixmapItem *currentImage;
+        std::pair<int, int> zoomRange;
+        int procentageOfZoom;
 };
 

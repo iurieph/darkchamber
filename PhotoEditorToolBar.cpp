@@ -34,10 +34,48 @@ PhotoEditorToolBar::PhotoEditorToolBar(QWidget *parent)
         addWidget(exposureInfo);
         addSeparator();
 
-        auto showEffectsAct = new QAction(QIcon::fromTheme("gnome-util"),
-                                          tr("Show effects sidebar"));
-        showEffectsAct->setCheckable(true);
-        addAction(showEffectsAct);
+        auto action = new QAction(QIcon::fromTheme("gnome-util"),
+                                  tr("Show effects sidebar"));
+        action->setCheckable(true);
+        addAction(action);
+
+        addSeparator();
+
+        // Zoom In
+        action = new QAction(QIcon::fromTheme("zoom-in"),
+                             tr("Zoom in browser thumbnails"));
+        QObject::connect(action,
+			 &QAction::triggered,
+			 this,
+		         &PhotoEditorToolBar::zoomIn);
+        addAction(action);
+
+        // Zoom Out
+        action = new QAction(QIcon::fromTheme("zoom-out"),
+                             tr("Zoom out browser thumbnails"));
+        QObject::connect(action,
+			 &QAction::triggered,
+			 this,
+		         &PhotoEditorToolBar::zoomOut);
+        addAction(action);
+
+        // Zoom to 1:1
+        action = new QAction(QIcon::fromTheme("zoom-original"),
+                             tr("Zoom to 1:1"));
+        QObject::connect(action,
+                         &QAction::triggered,
+                         this,
+                         &PhotoEditorToolBar::zoomOneToOne);
+        addAction(action);
+
+        // Zoom fit ti view
+        action = new QAction(QIcon::fromTheme("zoom-fit-best"),
+                             tr("Fit image to view"));
+        QObject::connect(action,
+                         &QAction::triggered,
+                         this,
+                         &PhotoEditorToolBar::zoomFit);
+        addAction(action);
 }
 
 void PhotoEditorToolBar::setExposureInfo(const QString &info)

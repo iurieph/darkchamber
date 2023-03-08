@@ -37,6 +37,22 @@ PhotoEditor::PhotoEditor(QWidget *parent)
         setLayout(new QVBoxLayout(this));
         layout()->addWidget(imageViewer);
         layout()->addWidget(editorToolBar);
+        QObject::connect(editorToolBar,
+                         &PhotoEditorToolBar::zoomIn,
+                         imageViewer,
+                         &PhotoViewer::zoomIn);
+        QObject::connect(editorToolBar,
+                         &PhotoEditorToolBar::zoomOut,
+                         imageViewer,
+                         &PhotoViewer::zoomOut);
+        QObject::connect(editorToolBar,
+                         &PhotoEditorToolBar::zoomOneToOne,
+                         imageViewer,
+                         &PhotoViewer::zoomOneToOne);
+        QObject::connect(editorToolBar,
+                         &PhotoEditorToolBar::zoomFit,
+                         imageViewer,
+                         &PhotoViewer::zoomFit);
 }
 
 void PhotoEditor::setImage(PhotoItem *image)

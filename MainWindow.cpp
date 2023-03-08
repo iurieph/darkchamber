@@ -91,16 +91,22 @@ MainWindow::MainWindow()
         setCentralWidget(widgetSplitter);
         resize(1300, 800);
 
-        QTimer *timer = new QTimer(this);
-        static int n;
-        QObject::connect(timer, &QTimer::timeout, [](){
-                DarkChamberApplication::guiSemaphore().release();
-                //                DARKCHAMBER_LOG_DEBUG() << "GUI THREAD" <<  n++;
-        });
-        timer->start(1);
-
         setStatusBar(new QStatusBar(this));
         createToolBars();
+
+#ifdef DKCHAMBER_DEBUG_MAIN_THREAD_TIMER
+        auto mainThreadTimer = new QTimer(this);
+        constexpr int timeout = 500;
+        static auto start = std::chrono::high_resolution_clock::now();
+        QObject::connect(mainThreadTimer, &QTimer::timeout, [&](){
+                auto stop = std::chrono::high_resolution_clock::now();
+                auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count() -  timeout;
+                start = stop;
+                dkch_debug() << duration;
+        });
+        mainThreadTimer->start(timeout);
+#endif // DKCHAMBER_DEBUG_MAIN_THREAD_TIMER
+
 }
 
 MainWindow::~MainWindow()
@@ -114,7 +120,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::createToolBars()
-{
+{       
         // Browser toolbar
         auto toolbar = addToolBar("Browser Toolbar");
         auto action = new QAction(QIcon::fromTheme("info"),

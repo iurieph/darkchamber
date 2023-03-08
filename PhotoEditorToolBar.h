@@ -32,11 +32,18 @@ class QLabel;
 
 class PhotoEditorToolBar : public QToolBar
 {
+        Q_OBJECT
 public:
         explicit PhotoEditorToolBar(QWidget *parent = nullptr);
         
 public slots:
         void setExposureInfo(const QString &info);
+        
+signals:
+        void zoomIn();
+        void zoomOut();
+        void zoomOneToOne();
+        void zoomFit();
 
 private:
         QLabel *exposureInfo;
