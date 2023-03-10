@@ -53,6 +53,10 @@ PhotoEditor::PhotoEditor(QWidget *parent)
                          &PhotoEditorToolBar::zoomFit,
                          imageViewer,
                          &PhotoViewer::zoomFit);
+        QObject::connect(imageViewer,
+                         &PhotoViewer::zoomUpdated,
+                         editorToolBar,
+                         &PhotoEditorToolBar::setZoom);
 }
 
 void PhotoEditor::setImage(PhotoItem *image)

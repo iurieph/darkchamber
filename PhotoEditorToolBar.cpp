@@ -30,6 +30,7 @@
 PhotoEditorToolBar::PhotoEditorToolBar(QWidget *parent)
         : QToolBar(parent)
         , exposureInfo{new QLabel(this)}
+        , zoomLabel{new QLabel(this)}
 {
         addWidget(exposureInfo);
         addSeparator();
@@ -76,9 +77,17 @@ PhotoEditorToolBar::PhotoEditorToolBar(QWidget *parent)
                          this,
                          &PhotoEditorToolBar::zoomFit);
         addAction(action);
+
+        // Zoom label
+        addWidget(zoomLabel);
 }
 
 void PhotoEditorToolBar::setExposureInfo(const QString &info)
 {
         exposureInfo->setText(info);
+}
+
+void PhotoEditorToolBar::setZoom(double procentage)
+{
+        zoomLabel->setText(QString(tr("%1 %")).arg(QString::number(procentage, 'f', 1)));
 }

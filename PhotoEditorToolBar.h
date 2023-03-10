@@ -38,6 +38,7 @@ public:
         
 public slots:
         void setExposureInfo(const QString &info);
+        void setZoom(double procentage);
         
 signals:
         void zoomIn();
@@ -47,6 +48,7 @@ signals:
 
 private:
         QLabel *exposureInfo;
+        QLabel *zoomLabel;
 };
 
 #endif // PHOTO_EDITOR_TOOL_BAR_H

@@ -42,6 +42,7 @@ public slots:
 
 signals:
         void nextImage(bool direction = true);
+        void zoomUpdated(double procentage);
 
  protected:
         void resizeEvent(QResizeEvent *event) override;
@@ -49,11 +50,11 @@ signals:
         void updateHandDragMode();
 
 protected slots:
-        void zoom(int procentage);
+        void zoom(double procentage);
 
 private:
         QGraphicsPixmapItem *currentImage;
-        std::pair<int, int> zoomRange;
-        int procentageOfZoom;
+        std::pair<double, double> zoomRange;
+        double procentageOfZoom;
 };
 
