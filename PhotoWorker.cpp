@@ -35,8 +35,12 @@ void PhotoWorker::run()
 {
         dark_debug() << "process...";
         auto item = new PhotoItem(photoPath);
+        if (item->thumbnail().isNull()) {
+                dark_debug() << "[ERROR ON LOADING] " << photoPath;
+                return;
+        }
+        
         item->moveToThread(QApplication::instance()->thread());
         emit photoAvailable(item);
-        workerSem.release();
         dark_debug() << "done";
 }

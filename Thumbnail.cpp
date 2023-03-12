@@ -117,6 +117,8 @@ double Thumbnail::width() const
 
 double Thumbnail::height() const
 {
+        //        dark_debug() << "H: " << thumbnailImage->pixmap().size().height();
+        //        dark_debug() << "rect(): " << rect().height();
         return mapRectToParent(rect()).height();
 }
 
