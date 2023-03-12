@@ -56,13 +56,13 @@ void PhotoBrowserModel::setThumbnailSize(const QSize &size)
         m_thumbnailSize = size;
         for (auto &item: modelItems)
                 item.first->setImageSize(m_thumbnailSize);
-        updateColumns();
+        updateLayout();
 }
 
 void PhotoBrowserModel::setThumbnailPadding(int padding)
 {        
         m_thumbnailPadding = padding;
-        updateColumns();
+        updateLayout();
 }
   
 bool PhotoBrowserModel::selectThumbnailAt(const QPointF &p)
@@ -133,12 +133,6 @@ void PhotoBrowserModel::clearModel()
 //{
 //}
 
-void PhotoBrowserModel::updateColumns()
-{
-        updateLayout();
-        emit sceneRectChanged(sceneRect());
-}
-
 void PhotoBrowserModel::updateLayout()
 {
         if (views().empty())
@@ -166,6 +160,7 @@ void PhotoBrowserModel::updateLayout()
         }
         
         setSceneRect(QRect(0, 0, sceneWidth, sceneHeight));
+        emit sceneRectChanged(sceneRect());
 }
 
 void PhotoBrowserModel::selectNext(int n)

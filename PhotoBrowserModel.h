@@ -65,7 +65,6 @@ public slots:
         void addPhotoItems(const std::vector<PhotoItem*> &photoItems);
         void removePhotoItems(const std::vector<PhotoItem*> &photoItems);
         void clearModel();
-        void updateColumns();
         void viewImage();
         void setMultiSelect(bool b = true);
 //        void setFilters(const QList<PhotoFilter*> &filters);
