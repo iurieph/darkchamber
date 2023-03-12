@@ -36,29 +36,40 @@ Thumbnail::Thumbnail(PhotoItem *item)
         , photoItem{item}
         , m_borderWidth{1}
         , m_padding{2}
-        , m_exposureInfo{new QGraphicsTextItem(photoItem->imageData()->getExposureInfo(), this)}
-        , m_thumbnailImage{new QGraphicsPixmapItem(QPixmap::fromImage(photoItem->thumbnail()), this)}
+        , exposureInfo{new QGraphicsTextItem(photoItem->imageData()->getExposureInfo(), this)}
+        , thumbnailImage{new QGraphicsPixmapItem(QPixmap::fromImage(photoItem->thumbnail()), this)}
 {
-        setSize(DarkChamberApplication::getAppInstance()->thumbnailsSize());        
         setFlag(QGraphicsItem::ItemIsSelectable);
-        setSelected(photoItem->isSelected());
-        
+        setSelected(photoItem->isSelected());       
         QObject::connect(photoItem,
                          &PhotoItem::photoSelected,
                          this,
                          &Thumbnail::selectItem);
         
-        updatePositions();
+        initUi();
 }
 
-void Thumbnail::updatePositions()
+void Thumbnail::initUi()
 {
-        m_thumbnailImage->setPos((rect().width() - m_thumbnailImage->boundingRect().width()) / 2,
-                                 m_borderWidth + m_padding);
-        if (m_exposureInfo->boundingRect().width() > rect().width() - 2 * (m_borderWidth + m_padding))
-                m_exposureInfo->setScale(static_cast<double>(rect().width() - 2 * (m_borderWidth + m_padding)) / m_exposureInfo->boundingRect().width());
-        m_exposureInfo->setPos(m_borderWidth + m_padding,
-                               m_borderWidth + m_padding + m_thumbnailImage->boundingRect().height() + 2);
+        auto exposureFont = exposureInfo->font();
+        exposureFont.setPixelSize(12);
+        exposureInfo->setFont(exposureFont);
+
+        auto pixmap = thumbnailImage->pixmap();
+        auto imageFrameWidth = std::max(thumbnailImage->boundingRect().width(),
+                                        thumbnailImage->boundingRect().height());
+        QRectF imageFrameRect(m_borderWidth + m_padding,
+                              m_borderWidth + m_padding,
+                              imageFrameWidth,
+                              imageFrameWidth);
+        thumbnailImage->setPos(imageFrameRect.topLeft()
+                               + QPointF((imageFrameRect.width() - pixmap.width()) / 2,
+                                         (imageFrameRect.height() - pixmap.height()) / 2));
+        exposureInfo->setPos(imageFrameRect.bottomLeft() + QPointF(0, 2));
+        setGeometry(0, 0,
+                    imageFrameRect.width() + 2.0 * (m_borderWidth + m_padding),
+                    imageFrameRect.height() + 2.0 * (m_borderWidth + m_padding)
+                    + exposureInfo->boundingRect().height() + 4);
 }
 
 void Thumbnail::paint(QPainter *painter,
@@ -70,19 +81,13 @@ void Thumbnail::paint(QPainter *painter,
         if (isSelected()) {
                 pen.setColor({0, 0, 255});
                 painter->fillRect(rect(), {200, 200, 200});
-                m_thumbnailImage->setOpacity(0.8);
+                thumbnailImage->setOpacity(0.8);
         } else {
-                m_thumbnailImage->setOpacity(1.0);
+                thumbnailImage->setOpacity(1.0);
                 pen.setColor(Qt::gray);
         }
         painter->setPen(pen);
         painter->drawRect(rect());
-}
-
-void Thumbnail::drawFileName(int yOffset, QPainter *painter)
-{
-//        painter->drawText(QRectF(0, yOffset, rect().width(), 20/*painter->font().pixelSize()*/),
-//                          Qt::AlignHCenter, QFileInfo(photoItem->path()).fileName());
 }
 
 void Thumbnail::selectItem(bool b)
@@ -91,50 +96,28 @@ void Thumbnail::selectItem(bool b)
                 setSelected(b);
 }
 
-void Thumbnail::setSize(const QSizeF &size)
+void Thumbnail::setImageSize(const QSizeF &newSize)
 {
-        auto currentGeometry = geometry();
-        setGeometry(currentGeometry.x(),
-                    currentGeometry.y(),
-                    size.width() + 2.0 * (m_borderWidth + m_padding),
-                    size.height() + 2.0 * (m_borderWidth + m_padding));
-
-        auto exposureFont = m_exposureInfo->font();
-        exposureFont.setPixelSize(12);
-        m_exposureInfo->setFont(exposureFont);
-       
-        auto pm = QPixmap::fromImage(photoItem->thumbnail());
-        if (pm.size() != size) {
-                pm = pm.scaled(rect().width() - 2.0 * (m_borderWidth + m_padding) + 1.0,
-                               rect().height() - m_exposureInfo->boundingRect().height() - 3.0);
-        }
-        m_thumbnailImage->setPixmap(pm);
-        updatePositions();
+        auto imageSize = thumbnailImage->pixmap().size();
+        if (imageSize.width() >= imageSize.height())
+                setScale(newSize.width() / imageSize.width());
+        else
+                setScale(newSize.height() / imageSize.height());
 }
 
 QSizeF Thumbnail::size() const
 {
-        return rect().size();
-}
-
-void Thumbnail::setWidth(const double w)
-{
-        setSize({w, size().height()});
+        return mapRectToParent(rect()).size();
 }
 
 double Thumbnail::width() const
 {
-        return rect().width();
-}
-
-void Thumbnail::setHeight(double h)
-{
-        setSize({size().width(), h});
+        return mapRectToParent(rect()).width();
 }
 
 double Thumbnail::height() const
 {
-        return rect().height();
+        return mapRectToParent(rect()).height();
 }
 
 QVariant Thumbnail::itemChange(QGraphicsItem::GraphicsItemChange change,
@@ -155,10 +138,6 @@ void Thumbnail::mouseDoubleClickEvent([[maybe_unused]]QGraphicsSceneMouseEvent *
         emit photoItem->viewImage(photoItem);
 }
 
-void Thumbnail::resizeEvent(QGraphicsSceneResizeEvent *event)
+void Thumbnail::resizeEvent([[maybe_unused]]QGraphicsSceneResizeEvent *event)
 {
-        int yOffset = m_borderWidth + m_padding;
-        m_thumbnailImage->setPos(m_borderWidth + m_padding, yOffset);
-        yOffset += m_thumbnailImage->boundingRect().height();
-        m_exposureInfo->setPos(m_borderWidth + m_padding, yOffset);
 }

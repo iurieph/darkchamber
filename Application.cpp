@@ -36,7 +36,7 @@ DarkChamberApplication* DarkChamberApplication::getAppInstance()
 
 int DarkChamberApplication::guiSemResourceSize()
 {
-        return 1;
+        return 5;
 }
 
 void DarkChamberApplication::releaseGuiSemaphore()

@@ -83,7 +83,7 @@ void PhotoBrowser::createActions()
 
 void PhotoBrowser::resizeEvent(QResizeEvent *event)
 {
-        browserModel->updateColumns();
+        browserModel->updateLayout();
 }
 
 void PhotoBrowser::keyPressEvent(QKeyEvent *event)

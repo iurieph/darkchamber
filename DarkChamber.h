@@ -40,6 +40,7 @@
 
 #define DARKCHAMBER_LOG_DEBUG() qDebug() << __PRETTY_FUNCTION__ << "[DEBUG] "
 #define dkch_debug() DARKCHAMBER_LOG_DEBUG()
+#define dark_debug() DARKCHAMBER_LOG_DEBUG()
 
 //#define DKCHAMBER_DEBUG_MAIN_THREAD_TIMER 1
 

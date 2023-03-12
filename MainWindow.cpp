@@ -113,7 +113,6 @@ MainWindow::~MainWindow()
 {
         DARKCHAMBER_LOG_DEBUG();
         pathLoader->stop();
-        DarkChamberApplication::guiSemaphore().release(10);
         pathLoaderThread->exit();
         pathLoaderThread->wait();
         delete pathLoader;

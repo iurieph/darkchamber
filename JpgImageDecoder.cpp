@@ -32,12 +32,12 @@
 JpgImageDecoder::JpgImageDecoder(const QString &path)
         : ImageDecoder(path)
 {
-        DARKCHAMBER_LOG_DEBUG() << path;
+        //DARKCHAMBER_LOG_DEBUG() << path;
 }
 
 QImage JpgImageDecoder::thumbnail() const
 {
-        DARKCHAMBER_LOG_DEBUG() << path();
+        //DARKCHAMBER_LOG_DEBUG() << path();
         auto size = DarkChamberApplication::getAppInstance()->thumbnailsSize();
         return QImage(path()).scaled(size,
                                      Qt::KeepAspectRatio/*,

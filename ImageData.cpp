@@ -33,7 +33,7 @@
 ImageData::ImageData(const QString &path)
         : imageDecoder{nullptr}
 {
-        DARKCHAMBER_LOG_DEBUG() << path;
+        //        DARKCHAMBER_LOG_DEBUG() << path;
         QFileInfo info(path);
         if (info.suffix().toUpper() == "CR3")
                 imageDecoder = std::make_unique<LibRawImageDecoder>(path);
@@ -50,7 +50,6 @@ const QString& ImageData::path() const
 
 QImage ImageData::thumbnail() const
 {
-        DARKCHAMBER_LOG_DEBUG() << imageDecoder->path(); 
         auto img = imageDecoder->thumbnail();
         if (!img.isNull() && img.size().isValid()) {
                 auto imgSize = DarkChamberApplication::getAppInstance()->thumbnailsSize();

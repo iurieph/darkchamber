@@ -29,12 +29,12 @@
 DefaultImageDecoder::DefaultImageDecoder(const QString &path)
         : ImageDecoder(path)
 {
-        DARKCHAMBER_LOG_DEBUG() << path;
+        //        DARKCHAMBER_LOG_DEBUG() << path;
 }
 
 QImage DefaultImageDecoder::thumbnail() const
 {
-        DARKCHAMBER_LOG_DEBUG() << path();
+        //DARKCHAMBER_LOG_DEBUG() << path();
 
         auto size = DarkChamberApplication::getAppInstance()->thumbnailsSize();
         return QImage(path()).scaled(size,

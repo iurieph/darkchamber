@@ -55,7 +55,7 @@ void PhotoBrowserModel::setThumbnailSize(const QSize &size)
 {
         m_thumbnailSize = size;
         for (auto &item: modelItems)
-                item.first->setSize(m_thumbnailSize);
+                item.first->setImageSize(m_thumbnailSize);
         updateColumns();
 }
 
@@ -84,10 +84,9 @@ void PhotoBrowserModel::addPhotoItems(const std::vector<PhotoItem*> &photoItems)
                 return !photoItem->isRejected();
         };
 
-        auto wasModelEmpty = modelItems.empty();
         for (const auto& photoItem: photoItems | std::views::filter(rejectedFilter)) {
                 auto thumbnail = new Thumbnail(photoItem);
-                thumbnail->setSize(m_thumbnailSize);
+                thumbnail->setImageSize(m_thumbnailSize);
                 auto newItem = std::make_pair(thumbnail, photoItem);
                 auto pos = std::lower_bound(modelItems.begin(),
                                             modelItems.end(),
@@ -103,15 +102,11 @@ void PhotoBrowserModel::addPhotoItems(const std::vector<PhotoItem*> &photoItems)
                 addItem(thumbnail);
         }
 
-        if (wasModelEmpty)
-                updateColumns();  
-        else
-                updatePositions();
+        updateLayout();
 }
 
 void PhotoBrowserModel::removePhotoItems(const std::vector<PhotoItem*> &photoItems)
 {
-        DARKCHAMBER_LOG_DEBUG();
         for (const auto& photoItem: photoItems) {
                 auto it = findByPhotoItem(photoItem);
                 if (it != modelItems.end()) {
@@ -124,7 +119,7 @@ void PhotoBrowserModel::removePhotoItems(const std::vector<PhotoItem*> &photoIte
         if (modelItems.empty())
                 m_currentIndex = 0;
                 
-        updatePositions();
+        updateLayout();
 }
 
 void PhotoBrowserModel::clearModel()
@@ -140,94 +135,37 @@ void PhotoBrowserModel::clearModel()
 
 void PhotoBrowserModel::updateColumns()
 {
-        /*int nColumns = getColumns(columnWidth());
-        if (m_nColumns != nColumns) {
-                m_nColumns = nColumns;
-                updatePositions();
-                return;
-                }*/
-
-//        views().first()->width();
-/*        if (views().empty())
-                return;
-        
-        auto viewSize = views().first()->size();
-        setSceneRect(QRectF(0, 0, viewSize.width(), viewSize.height()));
-        
-        // The QGraphicsScene caches the scene rect.*/
-        updatePositions();
+        updateLayout();
         emit sceneRectChanged(sceneRect());
 }
 
-void PhotoBrowserModel::updatePositions()
+void PhotoBrowserModel::updateLayout()
 {
         if (views().empty())
                 return;
-//        if (m_nColumns < 1)
-//                return;
 
         double xOffset = 0.0;
         double yOffset = 0.0;
         double rowHeight = 0.0;
         double sceneWidth = views().first()->rect().width();
         double sceneHeight = 0.0;
+        int nColumns = 0;
         for (auto &item : modelItems) {
+                m_nColumns = std::max(m_nColumns, nColumns);
                 rowHeight = std::max(item.first->height() + m_thumbnailPadding, rowHeight);
                 if (xOffset + item.first->width() + m_thumbnailPadding > sceneWidth) {
                         xOffset = 0.0;
                         yOffset += rowHeight;
                         rowHeight = 0.0;
+                        nColumns = 0;
                 }
                 item.first->setPos(xOffset, yOffset);
                 xOffset += item.first->width() + m_thumbnailPadding;
                 sceneHeight = yOffset + item.first->height();
+                nColumns++;
         }
         
-//        auto itemSize = QSizeF(columnWidth(), rowHeight());
-//        int nRows = getRows();
-        /*for (int row = 0; row < nRows; row++) {
-                for (int col = 0; col < m_nColumns; col++) {
-                        decltype(modelItems.size()) index = m_nColumns * row + col;
-                        if (index < modelItems.size()) {
-                                auto sceneItem = modelItems[m_nColumns * row + col].first;
-                                sceneItem->setPos(col * itemSize.width(), row * itemSize.height());
-                        }
-                }
-                }*/
         setSceneRect(QRect(0, 0, sceneWidth, sceneHeight));
-}
-
-int PhotoBrowserModel::columnWidth() const
-{
-        if (modelItems.empty())
-                return 0;
-        return modelItems.front().first->boundingRect().width() + thumbnailPadding() / 2;
-}
-
-int PhotoBrowserModel::rowHeight() const
-{
-        if (modelItems.empty())
-                return 0;
-        return modelItems.front().first->boundingRect().height() + thumbnailPadding() / 2;
-}
-
-int PhotoBrowserModel::getColumns(int width) const
-{
-        if (width == 0)
-                return 0;
-        
-        auto viewWidth = views().first()->width();
-        if (viewWidth < width)
-                return 1;
-        return viewWidth / width;
-}
-
-int PhotoBrowserModel::getRows() const
-{
-        if (m_nColumns > 0)
-                return modelItems.size() / m_nColumns
-                        + (modelItems.size() % m_nColumns ? 1 : 0);
-        return 0;
 }
 
 void PhotoBrowserModel::selectNext(int n)
@@ -303,7 +241,7 @@ void PhotoBrowserModel::rejectSelectedItems()
                 delete sceneItem;
         }
         
-        updatePositions();
+        updateLayout();
         if (sceneNextItem) {
                 for (auto &view : views())
                         view->ensureVisible(sceneNextItem);

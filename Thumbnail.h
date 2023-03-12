@@ -39,18 +39,16 @@ class Thumbnail : public QGraphicsWidget
 public:
         explicit Thumbnail(PhotoItem *item);
         PhotoItem* getPhotoItem() const;
-        void setSize(const QSizeF &size);
+        void setImageSize(const QSizeF &newSize);
         QSizeF size() const;
-        void setWidth(double w);
         double width() const;
-        void setHeight(double h);
         double height() const;
 
 protected slots:
         void selectItem(bool b = true);
 
 protected:
-        void updatePositions();
+        void initUi();
         void paint(QPainter *painter,
                    const QStyleOptionGraphicsItem *option,
                    QWidget *widget = nullptr) override;
@@ -64,8 +62,8 @@ private:
         QString myId;
         int m_borderWidth;
         int m_padding;
-        QGraphicsTextItem *m_exposureInfo;
-        QGraphicsPixmapItem *m_thumbnailImage;
+        QGraphicsTextItem *exposureInfo;
+        QGraphicsPixmapItem *thumbnailImage;
 };
 
 #endif // PHOTO_THUMBNAIL_H

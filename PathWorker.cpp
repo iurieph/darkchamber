@@ -58,14 +58,14 @@ void PathWorker::run()
                 auto file = QFileInfo(it.next());
                 if (!file.exists())
                         continue;
-                DARKCHAMBER_LOG_DEBUG() << "file: " << file.filePath();
-                photoWorkerSem.acquire();
+                DarkChamberApplication::guiSemaphore().acquire();
                 auto thumbWorker = new PhotoWorker(file.filePath(), photoWorkerSem);
                 QObject::connect(thumbWorker,
                                  &PhotoWorker::photoAvailable,
                                  this,
                                  &PathWorker::photoAvailable);
                 QThreadPool::globalInstance()->start(thumbWorker);
+                DARKCHAMBER_LOG_DEBUG() << "file: " << file.filePath();
         }
         DARKCHAMBER_LOG_DEBUG() << "exit";
 }

@@ -51,6 +51,7 @@ PathLoader::~PathLoader()
 {
         pathWorker->stop();
         threadPool->clear();
+        DarkChamberApplication::releaseGuiSemaphore();
         threadPool->waitForDone();
 }
 
@@ -78,15 +79,17 @@ void PathLoader::setPath(const QString &path)
         pathWorker->stop();
         threadPool->clear();
         DarkChamberApplication::releaseGuiSemaphore();
+
+        dark_debug() << "wait for done...";
         threadPool->waitForDone();
 
-        isSetPath = true;
-        QApplication::processEvents();
-        isSetPath = false;
-        
+        dark_debug() << "process events...";
+        DarkChamberApplication::processEvents();
+        dark_debug() << "process events done";
+
         emit pathChanged(rootPath);
 
-        DARKCHAMBER_LOG_DEBUG() << "set root path: " << rootPath;
+        dark_debug() << "set root path: " << rootPath;
         pathWorker->setPath(rootPath);
         threadPool->start(pathWorker);
 }

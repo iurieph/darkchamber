@@ -33,9 +33,10 @@ PhotoWorker::PhotoWorker(const QString &path, QSemaphore &sem)
         
 void PhotoWorker::run()
 {
-        DarkChamberApplication::guiSemaphore().acquire();
+        dark_debug() << "process...";
         auto item = new PhotoItem(photoPath);
         item->moveToThread(QApplication::instance()->thread());
         emit photoAvailable(item);
         workerSem.release();
+        dark_debug() << "done";
 }

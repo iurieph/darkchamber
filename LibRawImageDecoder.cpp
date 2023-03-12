@@ -26,7 +26,7 @@
 LibRawImageDecoder::LibRawImageDecoder(const QString &path)
         : ImageDecoder(path)
 {
-        DARKCHAMBER_LOG_DEBUG() << path;
+        //        DARKCHAMBER_LOG_DEBUG() << path;
 }
 
 std::unique_ptr<LibRaw> LibRawImageDecoder::getProcessor() const

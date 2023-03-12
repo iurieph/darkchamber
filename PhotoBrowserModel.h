@@ -59,6 +59,7 @@ public:
         void protectSelectedItems(bool protect = true);
         void moveSelectedFiles(const QString &path, bool copy = true);
         bool isMultiSelect() const;
+        void updateLayout();
 
 public slots:
         void addPhotoItems(const std::vector<PhotoItem*> &photoItems);
@@ -70,11 +71,6 @@ public slots:
 //        void setFilters(const QList<PhotoFilter*> &filters);
 
 protected:
-        void updatePositions();
-        int columnWidth() const;
-        int rowHeight() const;
-        int getRows() const;
-        int getColumns(int width) const;
         int indexOf(const QGraphicsItem *item) const;
         int indexAt(const QPointF &pos) const;
         ModelItems::iterator findBySceneItem(const QGraphicsItem *item);
