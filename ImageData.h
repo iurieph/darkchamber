@@ -37,6 +37,8 @@ class ImageData
         double getISO() const;
         double getAperture() const;
         double getShutter() const;
+        double getLensFocalLength() const;
+        const QString& getLensName() const;
         QString getExposureInfo() const;
         const std::filesystem::file_time_type& takenDate() const;
         

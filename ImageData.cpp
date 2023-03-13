@@ -91,23 +91,37 @@ QString ImageData::getExposureInfo() const
         else
                 isoStr = QString::number(rawInfo->getISO(), 'f', 0);
 
-        QString apertureStr;
-        if (rawInfo->getAperture() < 0.0)
-                apertureStr = "-";
-        else
+        QString apertureStr{"-"};
+        if (rawInfo->getAperture() > 0.0)
                 apertureStr = QString::number(rawInfo->getAperture(), 'f', 1);
 
-        QString shutterStr;
-        if (rawInfo->getShutter() < 0.0
-            || (rawInfo->getShutter() - 0.0) < std::numeric_limits<double>::epsilon()) {
-                shutterStr = "-";
-        } else {
+        QString shutterStr{"-"};
+        if (rawInfo->getShutter() > 0.0)
                 shutterStr = QString::number( 1.0 / rawInfo->getShutter(), 'f', 0);
-        }
-        return QString("ISO %1  f/%2  1/%3").arg(isoStr).arg(apertureStr).arg(shutterStr);
+
+        QString focalLength{"-"};
+        if (getLensFocalLength() > 0)
+                focalLength = QString::number(getLensFocalLength(), 'f', 0);
+                
+        return QString("ISO %1  f/%2  1/%3  %4mm")
+                .arg(isoStr)
+                .arg(apertureStr)
+                .arg(shutterStr)
+                .arg(focalLength);
 }
 
 const std::filesystem::file_time_type& ImageData::takenDate() const
 {
         return imageDecoder->imageInfo()->takenDate();
 }
+
+double ImageData::getLensFocalLength() const
+{
+        return imageDecoder->imageInfo()->getLensFocalLength();
+}
+
+const QString& ImageData::getLensName() const
+{
+        return imageDecoder->imageInfo()->getLensName();
+}
+

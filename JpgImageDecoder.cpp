@@ -52,24 +52,30 @@ QImage JpgImageDecoder::image() const
 std::unique_ptr<RawImageInfo> JpgImageDecoder::loadImageInfo()
 {
         auto info = std::make_unique<RawImageInfo>();
-        info->setTakenDate(takenDate());
-        return info;
-}
 
-std::filesystem::file_time_type JpgImageDecoder::takenDate() const
-{
         QFile file(path());
         if (!file.open(QIODevice::ReadOnly))
-                return std::filesystem::file_time_type();
+                return info;
 
         QImageReader reader(&file);
         reader.setDecideFormatFromContent(true);
         if (!reader.canRead()) {
                 file.close();
-                return std::filesystem::file_time_type();
+                return info;
         }
+
+        QStringList keys = reader.textKeys();
+        info->setTakenDate(parseTakenDate(reader, keys));
+        info->setLensFocalLengh(parseLensFocalLengh(reader, keys));
         
-        const QStringList keys = reader.textKeys();
+        file.close();
+        return info;
+}
+
+std::filesystem::file_time_type
+JpgImageDecoder::parseTakenDate(QImageReader &reader,
+                                const QStringList &keys) const
+{
         QDateTime creationTime;
         if (keys.contains("DateTimeOriginal")) {
                 creationTime = QDateTime::fromString(reader.text("DateTime"), Qt::ISODate);
@@ -78,12 +84,19 @@ std::filesystem::file_time_type JpgImageDecoder::takenDate() const
         } else if (keys.contains("DateTime")) {
                 creationTime = QDateTime::fromString(reader.text("DateTimeDigitized"), Qt::ISODate);
         } else {
-                file.close();
                 return std::filesystem::file_time_type();
         }
 
-        file.close();
         auto seconds = std::chrono::seconds(creationTime.toSecsSinceEpoch());   
         auto duration = std::chrono::duration_cast<std::filesystem::file_time_type::duration>(seconds);
         return std::filesystem::file_time_type(duration);
 }
+
+double JpgImageDecoder::parseLensFocalLengh(QImageReader &reader,
+                                            const QStringList &keys) const
+{
+        if (keys.contains("FocalLengh"))
+                return reader.text("FocalLength").toDouble();
+        return 0.0;
+}
+

@@ -26,7 +26,8 @@
 RawImageInfo::RawImageInfo()
         : isoVal{-1.0}
         , apertureVal{-1.0}
-        , shutterVal{-1.0}        
+        , shutterVal{-1.0}
+        , lensFocalLength{0.0}
 {
 }
 
@@ -69,5 +70,26 @@ const std::filesystem::file_time_type& RawImageInfo::takenDate() const
 {
         return m_takenDate;
 }
+
+void RawImageInfo::setLensFocalLengh(double length)
+{
+        lensFocalLength = length;
+}
+
+double RawImageInfo::getLensFocalLength() const
+{
+        return lensFocalLength;
+}
+
+void RawImageInfo::setLensName(const QString &name)
+{
+        lensName = name;
+}
+
+const QString& RawImageInfo::getLensName() const
+{
+        return lensName;
+}
+
         
 

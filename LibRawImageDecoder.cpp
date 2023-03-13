@@ -103,6 +103,7 @@ std::unique_ptr<RawImageInfo> LibRawImageDecoder::loadRawInfo(const std::unique_
         info->setISO(processor->imgdata.other.iso_speed);
         info->setShutter(processor->imgdata.other.shutter);
         info->setAperture(processor->imgdata.other.aperture);
+        info->setLensFocalLengh(processor->imgdata.other.focal_len);
         
         auto seconds = std::chrono::seconds(processor->imgdata.other.timestamp);
         auto duration = std::chrono::duration_cast<std::filesystem::file_time_type::duration>(seconds);

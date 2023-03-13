@@ -38,11 +38,17 @@ public:
         double getShutter() const;
         void setTakenDate(const std::filesystem::file_time_type& date);
         const std::filesystem::file_time_type& takenDate() const;
+        void setLensFocalLengh(double length);
+        double getLensFocalLength() const;
+        void setLensName(const QString &name);
+        const QString& getLensName() const;
 private:
         double isoVal;
         double apertureVal;
         double shutterVal;
         std::filesystem::file_time_type m_takenDate;
+        double lensFocalLength;
+        QString lensName;
 };
 
 #endif // RAW_IMAGE_INFO

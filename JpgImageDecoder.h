@@ -26,6 +26,10 @@
 
 #include "ImageDecoder.h"
 
+#include <QStringList>
+
+class QImageReader;
+
 class JpgImageDecoder : public ImageDecoder
 {
  public:
@@ -35,7 +39,10 @@ class JpgImageDecoder : public ImageDecoder
 
 protected:
         std::unique_ptr<RawImageInfo> loadImageInfo() override;
-        std::filesystem::file_time_type takenDate() const;
+        std::filesystem::file_time_type parseTakenDate(QImageReader &reader,
+                                                       const QStringList &keys) const;
+        double parseLensFocalLengh(QImageReader &reader,
+                                   const QStringList &keys) const;
 };
 
 #endif // JPG_IAMGE_DECODER_H
