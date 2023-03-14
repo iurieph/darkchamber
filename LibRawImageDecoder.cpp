@@ -60,7 +60,38 @@ QImage LibRawImageDecoder::thumbnail() const
 
 QImage LibRawImageDecoder::image() const
 {
-        auto rawProcessor = getProcessor();
+/*        auto rawProcessor = getProcessor();
+        if (!rawProcessor)
+                return QImage();
+
+//        if (!getImageInfo())
+//                setImageInfo(loadRawInfo(rawProcessor));
+
+        if (rawProcessor->unpack() != LIBRAW_SUCCESS)
+                return QImage();
+
+        //rawProcessor->raw2image();
+        if (rawProcessor->dcraw_process() != LIBRAW_SUCCESS)
+                return QImage();
+        
+
+        //auto image = rawProcessor->dcraw_make_mem_image();
+        //if (!image)
+        //        return QImage();
+
+        auto& imgdata = rawProcessor->imgdata;
+        auto imgData = reinterpret_cast<const quint16*>(rawProcessor->imgdata.image);
+
+        // TODO: use 16bit images.
+        QImage img(reinterpret_cast<const uchar*>(imgData),
+                   imgdata.sizes.iwidth,
+                   imgdata.sizes.iheight,
+                   QImage::Format_RGBA64);
+        for (size_t i = 0; i < imgdata.sizes.iwidth * imgdata.sizes.iheight * 4; i+= 4)
+                reinterpret_cast<quint16*>(img.bits())[i + 3] = std::numeric_limits<quint16>::max();
+
+                return img;*/
+         auto rawProcessor = getProcessor();
         if (!rawProcessor)
                 return QImage();
 
@@ -76,6 +107,9 @@ QImage LibRawImageDecoder::image() const
         auto image = rawProcessor->dcraw_make_mem_image();
         if (!image)
                 return QImage();
+        dkch_debug() << " colors: " << image->colors;
+        dkch_debug() << " bits: " << image->bits;
+        dkch_debug() << " type: :" << (image->type == LIBRAW_IMAGE_BITMAP);
 
         // TODO: use 16bit images.
         QImage img(image->data,
